@@ -1,0 +1,47 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - button [ref=e4]:
+    - img [ref=e5]
+  - generic [ref=e7]:
+    - button "Home" [ref=e8]:
+      - img [ref=e9]
+      - text: Home
+    - generic [ref=e12]: ›
+    - button "Contents" [ref=e13]
+    - generic [ref=e14]: ›
+    - button "Quarter 1" [ref=e15]
+  - generic [ref=e16]:
+    - heading "Quarter 1 - 2026" [level=1] [ref=e17]
+    - generic [ref=e18]:
+      - button "Bold" [ref=e19]:
+        - img [ref=e20]
+        - generic [ref=e23]: Bold
+      - button "Italic" [ref=e24]:
+        - img [ref=e25]
+        - generic [ref=e27]: Italic
+      - button "Highlight" [ref=e28]:
+        - img [ref=e29]
+        - generic [ref=e32]: Highlight
+      - button "Color" [ref=e33]:
+        - img [ref=e34]
+        - generic [ref=e40]: Color
+      - button "Heading" [ref=e41]:
+        - img [ref=e42]
+        - generic [ref=e44]: Heading
+      - button "• Bullet" [ref=e45]
+    - generic [ref=e46]:
+      - generic [ref=e47]:
+        - heading "Quarterly Goals" [level=2] [ref=e48]
+        - textbox "What are your main objectives for this quarter?" [ref=e49]
+      - generic [ref=e50]:
+        - heading "Key Focus Areas" [level=2] [ref=e51]
+        - textbox "What areas need your attention?" [ref=e52]
+      - generic [ref=e53]:
+        - heading "Projects & Milestones" [level=2] [ref=e54]
+        - textbox "Major projects and milestones to track..." [ref=e55]
+      - generic [ref=e56]:
+        - heading "Notes" [level=2] [ref=e57]
+        - textbox "Additional thoughts..." [ref=e58]
+```

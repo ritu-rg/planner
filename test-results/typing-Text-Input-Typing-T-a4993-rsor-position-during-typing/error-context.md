@@ -1,0 +1,50 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - button [ref=e4]:
+    - img [ref=e5]
+  - generic [ref=e7]:
+    - button "Home" [ref=e8]:
+      - img [ref=e9]
+      - text: Home
+    - generic [ref=e12]: ›
+    - button "Contents" [ref=e13]
+    - generic [ref=e14]: ›
+    - button "Yearly Overview" [ref=e15]
+  - generic [ref=e16]:
+    - heading "2026 Yearly Overview" [level=1] [ref=e17]
+    - generic [ref=e18]:
+      - button "Bold" [ref=e19]:
+        - img [ref=e20]
+        - generic [ref=e23]: Bold
+      - button "Italic" [ref=e24]:
+        - img [ref=e25]
+        - generic [ref=e27]: Italic
+      - button "Highlight" [ref=e28]:
+        - img [ref=e29]
+        - generic [ref=e32]: Highlight
+      - button "Color" [ref=e33]:
+        - img [ref=e34]
+        - generic [ref=e40]: Color
+      - button "Heading" [ref=e41]:
+        - img [ref=e42]
+        - generic [ref=e44]: Heading
+      - button "• Bullet" [ref=e45]
+    - generic [ref=e46]:
+      - generic [ref=e47]:
+        - heading "Overall Goals & Themes" [level=2] [ref=e48]
+        - textbox "What do you want to achieve this year?" [ref=e49]
+      - generic [ref=e50]:
+        - heading "Action Plan" [level=2] [ref=e51]
+        - textbox "How will you achieve your goals?" [ref=e52]: noitisop rosruc gnitseT
+      - generic [ref=e53]:
+        - heading "Gratitude" [level=2] [ref=e54]
+        - textbox "What are you grateful for?" [ref=e55]
+      - generic [ref=e56]:
+        - heading "Motivation" [level=2] [ref=e57]
+        - textbox "What keeps you motivated?" [ref=e58]
+      - generic [ref=e59]:
+        - heading "Notes" [level=2] [ref=e60]
+        - textbox "Additional thoughts..." [ref=e61]
+```
