@@ -1,5 +1,92 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronDown, ChevronUp, Menu, X, Home, Download, Upload, Bold, Italic, Highlighter, Palette, Type } from 'lucide-react';
+import { ChevronDown, ChevronUp, Menu, X, Home, Download, Upload, Bold, Italic, Highlighter, Palette, Type, Shield, Lock } from 'lucide-react';
+
+// ============ ENCRYPTION UTILITIES ============
+
+// Generate encryption key from password using PBKDF2
+const deriveKey = async (password, salt) => {
+  const encoder = new TextEncoder();
+  const passwordBuffer = encoder.encode(password);
+
+  const importedKey = await crypto.subtle.importKey(
+    'raw',
+    passwordBuffer,
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits', 'deriveKey']
+  );
+
+  return await crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt: salt,
+      iterations: 100000,
+      hash: 'SHA-256'
+    },
+    importedKey,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+};
+
+// Encrypt data with password
+const encryptData = async (data, password) => {
+  try {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await deriveKey(password, salt);
+
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(JSON.stringify(data));
+
+    const encryptedData = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv: iv },
+      key,
+      dataBuffer
+    );
+
+    return {
+      version: '1.0',
+      timestamp: new Date().toISOString(),
+      encryption: {
+        algorithm: 'AES-GCM',
+        iv: Array.from(iv),
+        salt: Array.from(salt)
+      },
+      data: Array.from(new Uint8Array(encryptedData))
+    };
+  } catch (error) {
+    console.error('Encryption error:', error);
+    throw new Error('Failed to encrypt data');
+  }
+};
+
+// Decrypt data with password
+const decryptData = async (encryptedPayload, password) => {
+  try {
+    const salt = new Uint8Array(encryptedPayload.encryption.salt);
+    const iv = new Uint8Array(encryptedPayload.encryption.iv);
+    const encryptedData = new Uint8Array(encryptedPayload.data);
+
+    const key = await deriveKey(password, salt);
+
+    const decryptedData = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: iv },
+      key,
+      encryptedData
+    );
+
+    const decoder = new TextDecoder();
+    const jsonString = decoder.decode(decryptedData);
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.error('Decryption error:', error);
+    throw new Error('Failed to decrypt data - incorrect password or corrupted file');
+  }
+};
+
+// ============ COMPONENTS ============
 
 // Rich text contentEditable div - manages its own state, syncs to parent on blur
 const SimpleTextArea = ({ fieldKey, placeholder, className, rows = 2, value, onChange, onFocus }) => {
@@ -51,7 +138,10 @@ const SimpleTextArea = ({ fieldKey, placeholder, className, rows = 2, value, onC
         color: '#673147',
         minHeight,
         whiteSpace: 'pre-wrap',
-        wordBreak: 'break-word'
+        wordBreak: 'break-word',
+        fontFamily: "'Merriweather', Georgia, serif",
+        fontSize: '0.95rem',
+        lineHeight: '1.6'
       }}
       suppressContentEditableWarning
     />
@@ -82,7 +172,11 @@ const SimpleInput = ({ fieldKey, placeholder, className, value, onChange }) => {
       onBlur={handleBlur}
       placeholder={placeholder}
       className={className}
-      style={{ color: '#673147' }}
+      style={{
+        color: '#673147',
+        fontFamily: "'Merriweather', Georgia, serif",
+        fontSize: '0.9rem'
+      }}
     />
   );
 };
@@ -162,6 +256,207 @@ const Section = ({ title, bgColor, children }) => (
   </div>
 );
 
+// Google Calendar Component
+const GoogleCalendar = React.memo(({ selectedDate }) => {
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const tokenClientRef = useRef(null);
+  const gapiInitialized = useRef(false);
+
+  // TODO: Replace with your own OAuth Client ID from Google Cloud Console
+  const CLIENT_ID = 'YOUR_CLIENT_ID_HERE.apps.googleusercontent.com';
+  const API_KEY = 'YOUR_API_KEY_HERE';
+  const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+
+  useEffect(() => {
+    const initializeGapi = () => {
+      if (gapiInitialized.current) return;
+
+      window.gapi.load('client', async () => {
+        try {
+          await window.gapi.client.init({
+            apiKey: API_KEY,
+            discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+          });
+          gapiInitialized.current = true;
+        } catch (err) {
+          console.error('Error initializing GAPI:', err);
+          setError('Failed to initialize Google Calendar API');
+        }
+      });
+
+      // Initialize token client
+      if (window.google) {
+        tokenClientRef.current = window.google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: (response) => {
+            if (response.access_token) {
+              setIsSignedIn(true);
+              setError('');
+            }
+          },
+        });
+      }
+    };
+
+    if (window.gapi && window.google) {
+      initializeGapi();
+    } else {
+      const checkInterval = setInterval(() => {
+        if (window.gapi && window.google) {
+          initializeGapi();
+          clearInterval(checkInterval);
+        }
+      }, 100);
+      return () => clearInterval(checkInterval);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isSignedIn && selectedDate) {
+      fetchEvents();
+    }
+  }, [isSignedIn, selectedDate]);
+
+  const handleSignIn = () => {
+    if (tokenClientRef.current) {
+      tokenClientRef.current.requestAccessToken();
+    }
+  };
+
+  const handleSignOut = () => {
+    const token = window.gapi.client.getToken();
+    if (token) {
+      window.google.accounts.oauth2.revoke(token.access_token);
+      window.gapi.client.setToken(null);
+    }
+    setIsSignedIn(false);
+    setEvents([]);
+  };
+
+  const fetchEvents = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const date = new Date(2026, selectedDate.month - 1, selectedDate.day);
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const response = await window.gapi.client.calendar.events.list({
+        calendarId: 'primary',
+        timeMin: startOfDay.toISOString(),
+        timeMax: endOfDay.toISOString(),
+        showDeleted: false,
+        singleEvents: true,
+        orderBy: 'startTime',
+      });
+
+      setEvents(response.result.items || []);
+    } catch (err) {
+      console.error('Error fetching events:', err);
+      setError('Failed to fetch calendar events');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatTime = (dateTime) => {
+    if (!dateTime) return 'All day';
+    const date = new Date(dateTime);
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  };
+
+  if (CLIENT_ID === 'YOUR_CLIENT_ID_HERE.apps.googleusercontent.com') {
+    return (
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
+        <p className="font-medium text-yellow-800 mb-2">Google Calendar Setup Required</p>
+        <p className="text-yellow-700 mb-2">To enable Google Calendar integration:</p>
+        <ol className="list-decimal ml-6 space-y-1 text-yellow-700">
+          <li>Go to <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer" className="underline">Google Cloud Console</a></li>
+          <li>Create a new project or select existing one</li>
+          <li>Enable Google Calendar API</li>
+          <li>Create OAuth 2.0 credentials (Web application)</li>
+          <li>Add <code>http://localhost:3000</code> to authorized JavaScript origins</li>
+          <li>Copy Client ID and API Key to App.jsx (line ~270)</li>
+        </ol>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return (
+      <div className="bg-white border border-neutral-300 rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-medium" style={{ color: '#673147' }}>Google Calendar</p>
+            <p className="text-sm text-neutral-600">Sign in to view your events</p>
+          </div>
+          <button
+            onClick={handleSignIn}
+            className="px-4 py-2 bg-white border border-neutral-300 rounded hover:bg-neutral-100 text-sm flex items-center gap-2"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
+            Sign in with Google
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white border border-neutral-300 rounded-lg p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-medium" style={{ color: '#673147' }}>Google Calendar Events</h3>
+        <button
+          onClick={handleSignOut}
+          className="text-xs text-neutral-600 hover:text-neutral-800 underline"
+        >
+          Sign out
+        </button>
+      </div>
+
+      {isLoading && <p className="text-sm text-neutral-600">Loading events...</p>}
+      {error && <p className="text-sm text-red-600">{error}</p>}
+
+      {!isLoading && !error && events.length === 0 && (
+        <p className="text-sm text-neutral-500 italic">No events scheduled for this day</p>
+      )}
+
+      {!isLoading && events.length > 0 && (
+        <div className="space-y-2">
+          {events.map((event) => (
+            <div
+              key={event.id}
+              className="border-l-4 pl-3 py-2"
+              style={{ borderColor: event.colorId ? '#C5B358' : '#A17188' }}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="font-medium text-sm" style={{ color: '#673147' }}>
+                    {event.summary || 'Untitled Event'}
+                  </p>
+                  <p className="text-xs text-neutral-600">
+                    {formatTime(event.start?.dateTime || event.start?.date)}
+                    {event.end?.dateTime && ` - ${formatTime(event.end.dateTime)}`}
+                  </p>
+                  {event.location && (
+                    <p className="text-xs text-neutral-500 mt-1">📍 {event.location}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+});
+
 const DigitalPlanner2026 = () => {
   const [currentPage, setCurrentPage] = useState('cover');
   const [expandedMonths, setExpandedMonths] = useState({});
@@ -176,6 +471,15 @@ const DigitalPlanner2026 = () => {
 
   const [textContent, setTextContent] = useState({});
   const [checkboxLists, setCheckboxLists] = useState({});
+
+  // Auto-backup state
+  const [backupDirectoryHandle, setBackupDirectoryHandle] = useState(null);
+  const [backupPassword, setBackupPassword] = useState('');
+  const [lastBackupDate, setLastBackupDate] = useState('');
+  const [showBackupSetup, setShowBackupSetup] = useState(false);
+  const [showLoadBackup, setShowLoadBackup] = useState(false);
+  const [backupStatus, setBackupStatus] = useState('');
+  const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
 
   const activeTextareaRef = useRef(null);
 
@@ -204,6 +508,19 @@ const DigitalPlanner2026 = () => {
         console.error('Failed to load');
       }
     }
+
+    // Load auto-backup settings
+    const backupSettings = localStorage.getItem('planner2026-backup-settings');
+    if (backupSettings) {
+      try {
+        const settings = JSON.parse(backupSettings);
+        setLastBackupDate(settings.lastBackupDate || '');
+        setBackupPassword(settings.backupPassword || '');
+        setAutoBackupEnabled(settings.autoBackupEnabled || false);
+      } catch (e) {
+        console.error('Failed to load backup settings');
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -215,6 +532,158 @@ const DigitalPlanner2026 = () => {
 
   const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
   const getWeeksInMonth = (month) => Math.ceil(getDaysInMonth(month, 2026) / 7);
+
+  // Check if backup is needed (daily)
+  useEffect(() => {
+    if (!autoBackupEnabled || !backupDirectoryHandle || !backupPassword) return;
+
+    const checkAndBackup = async () => {
+      const today = new Date().toISOString().split('T')[0];
+      if (lastBackupDate !== today) {
+        try {
+          await performAutoBackup();
+        } catch (error) {
+          console.error('Auto-backup failed:', error);
+          setBackupStatus('Auto-backup failed: ' + error.message);
+        }
+      }
+    };
+
+    checkAndBackup();
+  }, [autoBackupEnabled, backupDirectoryHandle, backupPassword, lastBackupDate, textContent, checkboxLists]);
+
+  // Perform encrypted backup to directory
+  const performAutoBackup = async () => {
+    if (!backupDirectoryHandle || !backupPassword) {
+      throw new Error('Backup not configured');
+    }
+
+    try {
+      // Check if we still have permission
+      const permission = await backupDirectoryHandle.queryPermission({ mode: 'readwrite' });
+      if (permission !== 'granted') {
+        const newPermission = await backupDirectoryHandle.requestPermission({ mode: 'readwrite' });
+        if (newPermission !== 'granted') {
+          throw new Error('Directory permission denied');
+        }
+      }
+
+      const data = { textContent, checkboxLists };
+      const encryptedData = await encryptData(data, backupPassword);
+      const today = new Date().toISOString().split('T')[0];
+      const filename = `planner-backup-${today}.json`;
+
+      const fileHandle = await backupDirectoryHandle.getFileHandle(filename, { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(JSON.stringify(encryptedData, null, 2));
+      await writable.close();
+
+      const newLastBackupDate = today;
+      setLastBackupDate(newLastBackupDate);
+
+      // Save backup settings
+      localStorage.setItem('planner2026-backup-settings', JSON.stringify({
+        lastBackupDate: newLastBackupDate,
+        backupPassword,
+        autoBackupEnabled
+      }));
+
+      setBackupStatus(`Backup successful: ${today}`);
+      setTimeout(() => setBackupStatus(''), 3000);
+    } catch (error) {
+      console.error('Backup error:', error);
+      throw error;
+    }
+  };
+
+  // Setup auto-backup (request directory and password)
+  const setupAutoBackup = async (password, confirmPassword) => {
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return false;
+    }
+
+    if (password.length < 8) {
+      alert('Password must be at least 8 characters');
+      return false;
+    }
+
+    try {
+      // Check if File System Access API is supported
+      if (!('showDirectoryPicker' in window)) {
+        alert('Auto-backup is not supported in this browser. Please use Chrome or Edge.');
+        return false;
+      }
+
+      const dirHandle = await window.showDirectoryPicker();
+      setBackupDirectoryHandle(dirHandle);
+      setBackupPassword(password);
+      setAutoBackupEnabled(true);
+      setShowBackupSetup(false);
+
+      // Perform initial backup
+      const today = new Date().toISOString().split('T')[0];
+      setLastBackupDate(today);
+
+      // Save settings
+      localStorage.setItem('planner2026-backup-settings', JSON.stringify({
+        lastBackupDate: today,
+        backupPassword: password,
+        autoBackupEnabled: true
+      }));
+
+      // Perform first backup
+      setTimeout(async () => {
+        try {
+          const data = { textContent, checkboxLists };
+          const encryptedData = await encryptData(data, password);
+          const filename = `planner-backup-${today}.json`;
+
+          const fileHandle = await dirHandle.getFileHandle(filename, { create: true });
+          const writable = await fileHandle.createWritable();
+          await writable.write(JSON.stringify(encryptedData, null, 2));
+          await writable.close();
+
+          setBackupStatus('Auto-backup enabled! First backup completed.');
+          setTimeout(() => setBackupStatus(''), 3000);
+        } catch (error) {
+          console.error('Initial backup failed:', error);
+          setBackupStatus('Setup complete, but first backup failed: ' + error.message);
+        }
+      }, 100);
+
+      return true;
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        // User cancelled directory picker
+        return false;
+      }
+      console.error('Setup error:', error);
+      alert('Failed to setup auto-backup: ' + error.message);
+      return false;
+    }
+  };
+
+  // Load encrypted backup from file
+  const loadEncryptedBackup = async (file, password) => {
+    try {
+      const text = await file.text();
+      const encryptedPayload = JSON.parse(text);
+      const decryptedData = await decryptData(encryptedPayload, password);
+
+      setTextContent(decryptedData.textContent || {});
+      setCheckboxLists(decryptedData.checkboxLists || {});
+
+      setShowLoadBackup(false);
+      setBackupStatus('Backup loaded successfully!');
+      setTimeout(() => setBackupStatus(''), 3000);
+      return true;
+    } catch (error) {
+      console.error('Load backup error:', error);
+      alert('Failed to load backup: ' + error.message);
+      return false;
+    }
+  };
 
   const downloadData = () => {
     const dataStr = JSON.stringify({ textContent, checkboxLists }, null, 2);
@@ -315,14 +784,17 @@ const DigitalPlanner2026 = () => {
   const PageFormattingToolbar = () => {
     const [showHighlightPicker, setShowHighlightPicker] = useState(false);
     const [showColorPicker, setShowColorPicker] = useState(false);
+    const [showFontPicker, setShowFontPicker] = useState(false);
+    const [showSizePicker, setShowSizePicker] = useState(false);
+    const [showHeadingPicker, setShowHeadingPicker] = useState(false);
 
     const highlightColors = [
-      { name: 'Green', value: '#d1f4e0' },
-      { name: 'Blue', value: '#d1e7ff' },
-      { name: 'Purple', value: '#e9d5ff' },
-      { name: 'Orange', value: '#ffe4cc' },
-      { name: 'Yellow', value: '#fff4d1' },
-      { name: 'Pink', value: '#ffd1dc' }
+      { name: 'Cream', value: '#FAEDCB' },
+      { name: 'Mint', value: '#C9E4DE' },
+      { name: 'Sky Blue', value: '#C6DEF1' },
+      { name: 'Lavender', value: '#DBCDF0' },
+      { name: 'Pink', value: '#F2C6DE' },
+      { name: 'Peach', value: '#F7D9C4' }
     ];
 
     const textColors = [
@@ -330,8 +802,33 @@ const DigitalPlanner2026 = () => {
       { name: 'Black', value: '#000000' }
     ];
 
+    const fontFamilies = [
+      { name: 'Merriweather', value: "'Merriweather', serif" },
+      { name: 'Dancing Script', value: "'Dancing Script', cursive" },
+      { name: 'Comic Sans', value: "'Comic Sans MS', 'Comic Sans', cursive" },
+      { name: 'Calibri', value: "'Calibri', sans-serif" },
+      { name: 'Sans-serif', value: 'sans-serif' },
+      { name: 'Serif', value: 'serif' },
+      { name: 'Monospace', value: 'monospace' }
+    ];
+
+    const fontSizes = [
+      { name: 'Small', value: '1' },      // Smallest
+      { name: 'Normal', value: '3' },     // Default
+      { name: 'Medium', value: '4' },     // +1
+      { name: 'Large', value: '5' },      // +2
+      { name: 'XL', value: '6' }          // +3
+    ];
+
+    const headingOptions = [
+      { name: 'Normal Text', value: 'p' },
+      { name: 'Heading 1', value: 'h1' },
+      { name: 'Heading 2', value: 'h2' },
+      { name: 'Heading 3', value: 'h3' }
+    ];
+
     return (
-      <div className="sticky top-0 z-10 mb-4 p-3 bg-white rounded-lg border border-neutral-300 shadow-sm flex gap-2 flex-wrap items-center">
+      <div className="sticky top-0 z-10 mb-4 p-3 bg-white rounded-lg border border-neutral-300 shadow-sm flex gap-2 flex-wrap items-center max-w-5xl mx-auto">
         <button onMouseDown={(e) => { e.preventDefault(); applyFormat('bold'); }} className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1" title="Bold" type="button">
           <Bold size={14} /> <span className="text-xs">Bold</span>
         </button>
@@ -413,9 +910,106 @@ const DigitalPlanner2026 = () => {
           )}
         </div>
 
-        <button onMouseDown={(e) => { e.preventDefault(); applyFormat('formatBlock', '<h3>'); }} className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1" title="Heading" type="button">
-          <Type size={14} /> <span className="text-xs">Heading</span>
-        </button>
+        {/* Font Family Picker */}
+        <div className="relative">
+          <button
+            onMouseDown={(e) => { e.preventDefault(); setShowFontPicker(!showFontPicker); }}
+            className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1"
+            title="Font Style"
+            type="button"
+          >
+            <Type size={14} /> <span className="text-xs">Font</span>
+          </button>
+          {showFontPicker && (
+            <div className="absolute top-full mt-1 bg-white border border-neutral-300 rounded shadow-lg p-2 z-20 min-w-40">
+              {fontFamilies.map(font => (
+                <button
+                  key={font.value}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    applyFormat('fontName', font.value);
+                    setShowFontPicker(false);
+                  }}
+                  className="w-full text-left px-3 py-2 hover:bg-neutral-100 rounded text-sm"
+                  style={{ fontFamily: font.value }}
+                  title={font.name}
+                  type="button"
+                >
+                  {font.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Font Size Picker */}
+        <div className="relative">
+          <button
+            onMouseDown={(e) => { e.preventDefault(); setShowSizePicker(!showSizePicker); }}
+            className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1"
+            title="Font Size"
+            type="button"
+          >
+            <span className="text-xs font-semibold">A</span><span className="text-xs">Size</span>
+          </button>
+          {showSizePicker && (
+            <div className="absolute top-full mt-1 bg-white border border-neutral-300 rounded shadow-lg p-2 z-20 min-w-32">
+              {fontSizes.map(size => (
+                <button
+                  key={size.value}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    applyFormat('fontSize', size.value);
+                    setShowSizePicker(false);
+                  }}
+                  className="w-full text-left px-3 py-2 hover:bg-neutral-100 rounded text-sm"
+                  title={size.name}
+                  type="button"
+                >
+                  {size.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Heading Picker */}
+        <div className="relative">
+          <button
+            onMouseDown={(e) => { e.preventDefault(); setShowHeadingPicker(!showHeadingPicker); }}
+            className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1"
+            title="Heading"
+            type="button"
+          >
+            <Type size={14} /> <span className="text-xs">Heading</span>
+          </button>
+          {showHeadingPicker && (
+            <div className="absolute top-full mt-1 bg-white border border-neutral-300 rounded shadow-lg p-2 z-20 min-w-40">
+              {headingOptions.map(heading => (
+                <button
+                  key={heading.value}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    applyFormat('formatBlock', `<${heading.value}>`);
+                    setShowHeadingPicker(false);
+                  }}
+                  className="w-full text-left px-3 py-2 hover:bg-neutral-100 rounded"
+                  style={{
+                    fontSize: heading.value === 'h1' ? '1.5rem' :
+                              heading.value === 'h2' ? '1.25rem' :
+                              heading.value === 'h3' ? '1.125rem' : '1rem',
+                    fontWeight: heading.value !== 'p' ? '600' : '400'
+                  }}
+                  title={heading.name}
+                  type="button"
+                >
+                  {heading.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <button onMouseDown={(e) => { e.preventDefault(); applyFormat('insertUnorderedList'); }} className="p-2 hover:bg-neutral-200 rounded text-xs" title="Bullet List" type="button">
           • Bullet
         </button>
@@ -423,15 +1017,174 @@ const DigitalPlanner2026 = () => {
     );
   };
 
+  // Backup Setup Modal
+  const BackupSetupModal = () => {
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
+    const handleSetup = async () => {
+      const success = await setupAutoBackup(password, confirmPassword);
+      if (success) {
+        setPassword('');
+        setConfirmPassword('');
+      }
+    };
+
+    if (!showBackupSetup) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)' }}>
+        <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4" style={{ backgroundColor: '#ffffff' }}>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-medium" style={{ color: '#A17188' }}>Setup Auto-Backup</h2>
+            <button onClick={() => setShowBackupSetup(false)} className="text-neutral-700 hover:text-neutral-900">
+              <X size={24} />
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm text-neutral-600 mb-4">
+                Enable daily encrypted backups to a folder of your choice. Your data will be encrypted with a password before saving.
+              </p>
+              <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
+                <p className="text-xs text-yellow-800">
+                  <strong>Important:</strong> If you forget your password, you won't be able to recover encrypted backups. Consider also using the manual "Download Backup" feature.
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                Backup Password (min 8 characters)
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-500"
+                placeholder="Enter password"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-500"
+                placeholder="Confirm password"
+              />
+            </div>
+
+            <button
+              onClick={handleSetup}
+              className="w-full p-3 bg-neutral-700 hover:bg-neutral-800 text-white rounded font-medium flex items-center justify-center gap-2"
+            >
+              <Shield size={18} /> Setup Auto-Backup
+            </button>
+
+            <p className="text-xs text-neutral-500 text-center">
+              You'll be asked to select a folder where encrypted backups will be saved daily.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Load Encrypted Backup Modal
+  const LoadBackupModal = () => {
+    const [password, setPassword] = useState('');
+    const [selectedFile, setSelectedFile] = useState(null);
+    const fileInputRef = useRef(null);
+
+    const handleLoad = async () => {
+      if (!selectedFile) {
+        alert('Please select a backup file');
+        return;
+      }
+      if (!password) {
+        alert('Please enter the password');
+        return;
+      }
+
+      await loadEncryptedBackup(selectedFile, password);
+      setPassword('');
+      setSelectedFile(null);
+    };
+
+    if (!showLoadBackup) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)' }}>
+        <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4" style={{ backgroundColor: '#ffffff' }}>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-medium" style={{ color: '#A17188' }}>Load Encrypted Backup</h2>
+            <button onClick={() => { setShowLoadBackup(false); setPassword(''); setSelectedFile(null); }} className="text-neutral-700 hover:text-neutral-900">
+              <X size={24} />
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm text-neutral-600 mb-4">
+                Select an encrypted backup file and enter the password to restore your data.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                Backup File
+              </label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={(e) => setSelectedFile(e.target.files[0])}
+                className="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-500 text-sm"
+              />
+              {selectedFile && (
+                <p className="text-xs text-green-600 mt-1">Selected: {selectedFile.name}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-500"
+                placeholder="Enter password"
+              />
+            </div>
+
+            <button
+              onClick={handleLoad}
+              className="w-full p-3 bg-neutral-700 hover:bg-neutral-800 text-white rounded font-medium flex items-center justify-center gap-2"
+            >
+              <Lock size={18} /> Load Backup
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const NavigationMenu = () => (
-    <div className={`fixed inset-0 z-50 ${showMenu ? 'block' : 'hidden'}`}>
-      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowMenu(false)}></div>
-      <div className="absolute left-0 top-0 h-full w-80 bg-neutral-50 shadow-xl overflow-y-auto">
+    <>
+      <div className={`fixed left-0 top-0 h-full w-80 bg-neutral-50 shadow-xl overflow-y-auto transition-all duration-300 z-40 ${showMenu ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl text-neutral-700 font-medium">Menu</h2>
-            <button onClick={() => setShowMenu(false)} className="text-neutral-700"><X size={24} /></button>
-          </div>
+          <h2 className="text-2xl text-neutral-700 font-medium" style={{ fontFamily: "'Dancing Script', cursive" }}>Menu</h2>
+          <button onClick={() => setShowMenu(false)} className="text-neutral-700 hover:text-neutral-900"><X size={24} /></button>
+        </div>
           
           <div className="mb-4 space-y-2">
             <button onClick={downloadData} className="w-full p-2 bg-neutral-200 hover:bg-neutral-300 rounded flex items-center gap-2 justify-center text-neutral-700">
@@ -441,7 +1194,44 @@ const DigitalPlanner2026 = () => {
               <Upload size={16} /> Load Backup
               <input type="file" accept=".json" onChange={uploadData} className="hidden" />
             </label>
-            {saveMessage && <div className="text-center text-green-600 text-sm">{saveMessage}</div>}
+
+            <div className="border-t border-neutral-300 pt-2 mt-2">
+              <p className="text-xs text-neutral-500 mb-2 font-semibold">Encrypted Auto-Backup</p>
+              {autoBackupEnabled ? (
+                <>
+                  <div className="bg-green-50 border border-green-200 rounded p-2 mb-2">
+                    <p className="text-xs text-green-700 flex items-center gap-1">
+                      <Shield size={12} /> Auto-backup enabled
+                    </p>
+                    {lastBackupDate && (
+                      <p className="text-xs text-green-600 mt-1">Last: {lastBackupDate}</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setAutoBackupEnabled(false)}
+                    className="w-full p-2 bg-red-100 hover:bg-red-200 rounded text-xs text-red-700"
+                  >
+                    Disable Auto-Backup
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setShowBackupSetup(true)}
+                  className="w-full p-2 bg-neutral-700 hover:bg-neutral-800 text-white rounded flex items-center gap-2 justify-center"
+                >
+                  <Shield size={16} /> Setup Auto-Backup
+                </button>
+              )}
+              <button
+                onClick={() => setShowLoadBackup(true)}
+                className="w-full p-2 bg-neutral-200 hover:bg-neutral-300 rounded flex items-center gap-2 justify-center text-neutral-700 mt-2"
+              >
+                <Lock size={16} /> Load Encrypted Backup
+              </button>
+            </div>
+
+            {saveMessage && <div className="text-center text-green-600 text-sm mt-2">{saveMessage}</div>}
+            {backupStatus && <div className="text-center text-green-600 text-sm mt-2">{backupStatus}</div>}
           </div>
           
           <div className="space-y-3">
@@ -481,31 +1271,31 @@ const DigitalPlanner2026 = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 
   const Breadcrumbs = () => (
-    <div className="flex items-center gap-2 mb-6 flex-wrap text-sm">
-      <button onClick={() => { setBreadcrumbs([]); navigateTo('cover'); }} className="flex items-center gap-1 hover:underline text-neutral-600">
-        <Home size={16} /> Home
+    <div className="flex items-center gap-3 mb-6 flex-wrap" style={{ fontSize: '1rem' }}>
+      <button onClick={() => { setBreadcrumbs([]); navigateTo('cover'); }} className="flex items-center gap-2 hover:underline" style={{ color: '#A17188', fontFamily: "'Dancing Script', cursive", fontSize: '1.1rem' }}>
+        <Home size={18} /> Home
       </button>
       {breadcrumbs.map((crumb, index) => (
         <React.Fragment key={index}>
-          <span className="text-neutral-400">›</span>
-          <button onClick={() => navigateToBreadcrumb(index)} className="hover:underline text-neutral-600">{crumb.label}</button>
+          <span style={{ color: '#C5B358', fontSize: '1.2rem' }}>›</span>
+          <button onClick={() => navigateToBreadcrumb(index)} className="hover:underline" style={{ color: '#A17188', fontFamily: "'Dancing Script', cursive", fontSize: '1.1rem' }}>{crumb.label}</button>
         </React.Fragment>
       ))}
     </div>
   );
 
   const PageHeader = ({ children }) => (
-    <div className="relative">
+    <div className={`relative transition-all duration-300 ${showMenu ? 'ml-80' : 'ml-0'}`}>
       {currentPage !== 'cover' && (
         <>
-          <button onClick={() => setShowMenu(true)} className="absolute top-4 left-4 z-10 p-2 rounded-full shadow-lg bg-neutral-200 text-neutral-700 hover:bg-neutral-300">
-            <Menu size={24} />
+          <button onClick={() => setShowMenu(!showMenu)} className="fixed top-4 left-4 z-50 p-3 rounded-full shadow-lg text-white hover:bg-opacity-90 transition-all" style={{ backgroundColor: '#A17188' }}>
+            {showMenu ? <X size={24} /> : <Menu size={24} />}
           </button>
-          <div className="pt-20 px-4"><Breadcrumbs /></div>
+          <div className="pt-20 px-8"><Breadcrumbs /></div>
         </>
       )}
       {children}
@@ -550,6 +1340,8 @@ const DigitalPlanner2026 = () => {
           </div>
         </div>
         <NavigationMenu />
+        <BackupSetupModal />
+        <LoadBackupModal />
       </>
     );
   }
@@ -613,6 +1405,8 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
+        <BackupSetupModal />
+        <LoadBackupModal />
       </>
     );
   }
@@ -628,7 +1422,7 @@ const DigitalPlanner2026 = () => {
             <div className="max-w-5xl mx-auto space-y-6">
               <Section title="Overall Goals & Themes" bgColor="bg-neutral-200">
                 <SimpleTextArea
-                  fieldKey="yearly-goals"
+                  fieldKey="yearly-goals"back to the
                   placeholder="What do you want to achieve this year?"
                   className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
                   rows={5}
@@ -685,6 +1479,8 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
+        <BackupSetupModal />
+        <LoadBackupModal />
       </>
     );
   }
@@ -721,6 +1517,8 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
+        <BackupSetupModal />
+        <LoadBackupModal />
       </>
     );
   }
@@ -783,6 +1581,8 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
+        <BackupSetupModal />
+        <LoadBackupModal />
       </>
     );
   }
@@ -831,6 +1631,8 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
+        <BackupSetupModal />
+        <LoadBackupModal />
       </>
     );
   }
@@ -904,6 +1706,8 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
+        <BackupSetupModal />
+        <LoadBackupModal />
       </>
     );
   }
@@ -1055,11 +1859,20 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
+        <BackupSetupModal />
+        <LoadBackupModal />
       </>
     );
   }
 
-  return <div className="h-full w-full bg-neutral-50 flex items-center justify-center"><p className="text-neutral-700">Navigate using the menu</p></div>;
+  return (
+    <>
+      <div className="h-full w-full bg-neutral-50 flex items-center justify-center"><p className="text-neutral-700">Navigate using the menu</p></div>
+      <NavigationMenu />
+      <BackupSetupModal />
+      <LoadBackupModal />
+    </>
+  );
 };
 
 export default DigitalPlanner2026;
