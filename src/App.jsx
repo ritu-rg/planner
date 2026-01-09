@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronDown, ChevronUp, Menu, X, Home, Download, Upload, Bold, Italic, Highlighter, Palette, Type, Shield, Lock } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Menu, X, Home, Download, Upload, Bold, Italic, Highlighter, Palette, Type, Shield, Lock } from 'lucide-react';
 
 // ============ ENCRYPTION UTILITIES ============
 
@@ -265,9 +265,9 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
   const tokenClientRef = useRef(null);
   const gapiInitialized = useRef(false);
 
-  // TODO: Replace with your own OAuth Client ID from Google Cloud Console
-  const CLIENT_ID = 'YOUR_CLIENT_ID_HERE.apps.googleusercontent.com';
-  const API_KEY = 'YOUR_API_KEY_HERE';
+  // Load credentials from environment variables
+  const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
   const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 
   useEffect(() => {
@@ -371,7 +371,7 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
-  if (CLIENT_ID === 'YOUR_CLIENT_ID_HERE.apps.googleusercontent.com') {
+  if (!CLIENT_ID || CLIENT_ID === 'YOUR_CLIENT_ID_HERE.apps.googleusercontent.com') {
     return (
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
         <p className="font-medium text-yellow-800 mb-2">Google Calendar Setup Required</p>
@@ -382,8 +382,14 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
           <li>Enable Google Calendar API</li>
           <li>Create OAuth 2.0 credentials (Web application)</li>
           <li>Add <code>http://localhost:3000</code> to authorized JavaScript origins</li>
-          <li>Copy Client ID and API Key to App.jsx (line ~270)</li>
+          <li>Create an API Key</li>
+          <li>Copy <code>.env.example</code> to <code>.env</code> in the project root</li>
+          <li>Add your Client ID and API Key to <code>.env</code> file</li>
+          <li>Restart the dev server (<code>npm run dev</code>)</li>
         </ol>
+        <p className="text-yellow-700 mt-2 text-xs italic">
+          ⚠️ Never commit the <code>.env</code> file to git - it's already in <code>.gitignore</code>
+        </p>
       </div>
     );
   }
@@ -1288,19 +1294,129 @@ const DigitalPlanner2026 = () => {
     </div>
   );
 
-  const PageHeader = ({ children }) => (
-    <div className={`relative transition-all duration-300 ${showMenu ? 'ml-80' : 'ml-0'}`}>
-      {currentPage !== 'cover' && (
-        <>
-          <button onClick={() => setShowMenu(!showMenu)} className="fixed top-4 left-4 z-50 p-3 rounded-full shadow-lg text-white hover:bg-opacity-90 transition-all" style={{ backgroundColor: '#A17188' }}>
-            {showMenu ? <X size={24} /> : <Menu size={24} />}
-          </button>
-          <div className="pt-20 px-8"><Breadcrumbs /></div>
-        </>
-      )}
-      {children}
-    </div>
-  );
+  // Get next and previous page navigation
+  const getNextPrevPages = () => {
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    switch (currentPage) {
+      case 'cover':
+        return { prev: null, next: { page: 'contents', label: 'Contents' } };
+      case 'contents':
+        return { prev: { page: 'cover', label: 'Cover' }, next: { page: 'calendar', label: 'Calendar' } };
+      case 'calendar':
+        return { prev: { page: 'contents', label: 'Contents' }, next: { page: 'yearly', label: 'Yearly' } };
+      case 'yearly':
+        return { prev: { page: 'calendar', label: 'Calendar' }, next: { page: 'quarter', label: 'Q1', quarter: 1 } };
+      case 'quarter':
+        if (selectedQuarter === 1) {
+          return { prev: { page: 'yearly', label: 'Yearly' }, next: { page: 'quarter', label: 'Q2', quarter: 2 } };
+        } else if (selectedQuarter === 2) {
+          return { prev: { page: 'quarter', label: 'Q1', quarter: 1 }, next: { page: 'quarter', label: 'Q3', quarter: 3 } };
+        } else if (selectedQuarter === 3) {
+          return { prev: { page: 'quarter', label: 'Q2', quarter: 2 }, next: { page: 'quarter', label: 'Q4', quarter: 4 } };
+        } else {
+          return { prev: { page: 'quarter', label: 'Q3', quarter: 3 }, next: { page: 'month-calendar', label: months[0], month: 1 } };
+        }
+      case 'month-calendar':
+        if (selectedMonth === 1) {
+          return { prev: { page: 'quarter', label: 'Q4', quarter: 4 }, next: { page: 'month-overview', label: `${months[0]} Overview`, month: 1 } };
+        } else {
+          return { prev: { page: 'month-overview', label: `${months[selectedMonth - 2]} Overview`, month: selectedMonth - 1 }, next: { page: 'month-overview', label: `${months[selectedMonth - 1]} Overview`, month: selectedMonth } };
+        }
+      case 'month-overview':
+        if (selectedMonth === 12) {
+          return { prev: { page: 'month-calendar', label: months[11], month: 12 }, next: null };
+        } else {
+          return { prev: { page: 'month-calendar', label: months[selectedMonth - 1], month: selectedMonth }, next: { page: 'month-calendar', label: months[selectedMonth], month: selectedMonth + 1 } };
+        }
+      case 'week':
+        const weeksInMonth = Math.ceil(getDaysInMonth(selectedMonth, 2026) / 7);
+        if (selectedWeek === 1) {
+          return { prev: { page: 'month-overview', label: `${months[selectedMonth - 1]} Overview`, month: selectedMonth }, next: { page: 'week', label: `Week ${selectedWeek + 1}`, month: selectedMonth, week: selectedWeek + 1 } };
+        } else if (selectedWeek < weeksInMonth) {
+          return { prev: { page: 'week', label: `Week ${selectedWeek - 1}`, month: selectedMonth, week: selectedWeek - 1 }, next: { page: 'week', label: `Week ${selectedWeek + 1}`, month: selectedMonth, week: selectedWeek + 1 } };
+        } else {
+          return { prev: { page: 'week', label: `Week ${selectedWeek - 1}`, month: selectedMonth, week: selectedWeek - 1 }, next: { page: 'day', label: `${months[selectedMonth - 1]} 1`, month: selectedMonth, day: 1 } };
+        }
+      case 'day':
+        const daysInMonth = getDaysInMonth(selectedDay.month, 2026);
+        if (selectedDay.day === 1) {
+          const weeksInPrevMonth = Math.ceil(getDaysInMonth(selectedDay.month, 2026) / 7);
+          return { prev: { page: 'week', label: `Week ${weeksInPrevMonth}`, month: selectedDay.month, week: weeksInPrevMonth }, next: { page: 'day', label: `${months[selectedDay.month - 1]} ${selectedDay.day + 1}`, month: selectedDay.month, day: selectedDay.day + 1 } };
+        } else if (selectedDay.day < daysInMonth) {
+          return { prev: { page: 'day', label: `${months[selectedDay.month - 1]} ${selectedDay.day - 1}`, month: selectedDay.month, day: selectedDay.day - 1 }, next: { page: 'day', label: `${months[selectedDay.month - 1]} ${selectedDay.day + 1}`, month: selectedDay.month, day: selectedDay.day + 1 } };
+        } else {
+          return { prev: { page: 'day', label: `${months[selectedDay.month - 1]} ${selectedDay.day - 1}`, month: selectedDay.month, day: selectedDay.day - 1 }, next: null };
+        }
+      default:
+        return { prev: null, next: null };
+    }
+  };
+
+  const handleNavigation = (navInfo) => {
+    if (!navInfo) return;
+
+    if (navInfo.quarter !== undefined) {
+      setSelectedQuarter(navInfo.quarter);
+    }
+    if (navInfo.month !== undefined) {
+      setSelectedMonth(navInfo.month);
+    }
+    if (navInfo.week !== undefined) {
+      setSelectedWeek(navInfo.week);
+    }
+    if (navInfo.day !== undefined) {
+      setSelectedDay({ month: navInfo.month, day: navInfo.day });
+    }
+
+    navigateTo(navInfo.page, navInfo.label);
+  };
+
+  const PageHeader = ({ children }) => {
+    const { prev, next } = getNextPrevPages();
+
+    return (
+      <div className={`relative transition-all duration-300 ${showMenu ? 'ml-80' : 'ml-0'}`}>
+        {currentPage !== 'cover' && (
+          <>
+            <button onClick={() => setShowMenu(!showMenu)} className="fixed top-4 left-4 z-50 p-3 rounded-full shadow-lg text-white hover:bg-opacity-90 transition-all" style={{ backgroundColor: '#A17188' }}>
+              {showMenu ? <X size={24} /> : <Menu size={24} />}
+            </button>
+            <div className="pt-20 px-8">
+              <div className="flex items-center justify-between mb-4">
+                <Breadcrumbs />
+                <div className="flex gap-2">
+                  {prev && (
+                    <button
+                      onClick={() => handleNavigation(prev)}
+                      className="px-4 py-2 rounded-lg border border-neutral-300 hover:bg-neutral-100 transition-colors flex items-center gap-2 text-sm"
+                      style={{ color: '#673147' }}
+                      title={`Previous: ${prev.label}`}
+                    >
+                      <ChevronLeft size={16} />
+                      <span>Prev</span>
+                    </button>
+                  )}
+                  {next && (
+                    <button
+                      onClick={() => handleNavigation(next)}
+                      className="px-4 py-2 rounded-lg border border-neutral-300 hover:bg-neutral-100 transition-colors flex items-center gap-2 text-sm"
+                      style={{ color: '#673147' }}
+                      title={`Next: ${next.label}`}
+                    >
+                      <span>Next</span>
+                      <ChevronRight size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        {children}
+      </div>
+    );
+  };
 
   // COVER PAGE - SVG floral design
   if (currentPage === 'cover') {
@@ -1804,6 +1920,10 @@ const DigitalPlanner2026 = () => {
                     onFocus={handleTextFocus}
                   />
                 </Section>
+
+                {/* Google Calendar Integration */}
+                <GoogleCalendar selectedDate={selectedDay} />
+
                 <Section title="Schedule" bgColor="bg-white">
                   <div className="space-y-2 max-h-96 overflow-y-auto">
                     {times.map((time, i) => (

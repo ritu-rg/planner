@@ -6,11 +6,13 @@ A beautiful, feature-rich digital planner built with React for organizing your 2
 
 - ✨ **Beautiful cover design** with custom planner artwork
 - 📅 **Complete 2026 calendar** with yearly, quarterly, monthly, weekly, and daily views
-- ✍️ **Text formatting** - Bold, italic, highlights, colors, headings, and bullets
+- ✍️ **Text formatting** - Bold, italic, highlights, colors, font styles, font sizes, headings, and bullets
 - 📝 **Rich note-taking** - Controlled textareas with instant updates
 - ✅ **To-do lists** with checkboxes
 - 💾 **Auto-save** - All data saved to localStorage
+- 🔐 **Encrypted backups** - Daily auto-backup with client-side encryption and password protection
 - 📥 **Backup/Restore** - Download and upload your planner data as JSON
+- 📆 **Google Calendar integration** - View your Google Calendar events on daily pages
 - 🎨 **Mauve color palette** - Beautiful, calming design
 
 ## Prerequisites
@@ -67,10 +69,63 @@ To test the production build locally:
 npm run preview
 ```
 
+## Google Calendar Integration (Optional)
+
+To view your Google Calendar events on daily pages:
+
+### Step 1: Get Google API Credentials
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project (or select an existing one)
+3. Enable the **Google Calendar API**:
+   - Navigate to "APIs & Services" → "Library"
+   - Search for "Google Calendar API"
+   - Click "Enable"
+4. Create **OAuth 2.0 Client ID**:
+   - Go to "APIs & Services" → "Credentials"
+   - Click "Create Credentials" → "OAuth client ID"
+   - If prompted, configure the consent screen (External, add your email)
+   - Application type: **Web application**
+   - Name: "Digital Planner 2026"
+   - Authorized JavaScript origins: Add `http://localhost:3000`
+   - Click "Create" and copy the **Client ID**
+5. Create **API Key**:
+   - Click "Create Credentials" → "API key"
+   - Copy the **API key**
+
+### Step 2: Configure Environment Variables
+
+1. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Edit `.env` and add your credentials:
+   ```
+   VITE_GOOGLE_CLIENT_ID=your-actual-client-id.apps.googleusercontent.com
+   VITE_GOOGLE_API_KEY=your-actual-api-key
+   ```
+
+3. Restart the dev server:
+   ```bash
+   npm run dev
+   ```
+
+### Security Notes
+
+- ⚠️ **Never commit `.env` to git** - it contains your API credentials
+- The `.env` file is already in `.gitignore` to prevent accidental commits
+- Only commit `.env.example` (which has placeholder values)
+- Google Calendar integration uses **read-only access** - your app cannot modify your calendar
+- You can revoke access anytime from your Google account settings
+
 ## Project Structure
 
 ```
 planner-2026-react/
+├── .env                 # Your API keys (DO NOT COMMIT)
+├── .env.example         # Template for API keys (safe to commit)
+├── .gitignore           # Prevents .env from being committed
 ├── index.html           # Main HTML file
 ├── package.json         # Project dependencies and scripts
 ├── vite.config.js       # Vite configuration
