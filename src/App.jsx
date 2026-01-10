@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Menu, X, Home, Download, Upload, Bold, Italic, Highlighter, Palette, Type, Shield, Lock } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Menu, X, Home, Download, Upload, Bold, Italic, Highlighter, Palette, Type, Shield, Lock, Save } from 'lucide-react';
 
 // ============ ENCRYPTION UTILITIES ============
 
@@ -215,8 +215,13 @@ const CheckboxItem = ({ item, listKey, idx, placeholder, onUpdate, onRemove }) =
         onChange={handleTextChange}
         onBlur={handleTextBlur}
         placeholder={placeholder}
-        className="flex-1 p-2 border border-neutral-300 rounded bg-white focus:outline-none focus:border-neutral-500"
-        style={{ color: '#673147' }}
+        className="flex-1 p-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-500"
+        style={{
+          color: '#673147',
+          backgroundColor: item.checked ? '#B7AEB6' : '#ffffff',
+          textDecoration: item.checked ? 'line-through' : 'none',
+          opacity: item.checked ? 0.8 : 1
+        }}
       />
       <button
         onClick={() => onRemove(listKey, idx)}
@@ -1019,6 +1024,20 @@ const DigitalPlanner2026 = () => {
         <button onMouseDown={(e) => { e.preventDefault(); applyFormat('insertUnorderedList'); }} className="p-2 hover:bg-neutral-200 rounded text-xs" title="Bullet List" type="button">
           • Bullet
         </button>
+
+        {/* Spacer */}
+        <div className="flex-1"></div>
+
+        {/* Save Button */}
+        <button
+          onClick={downloadData}
+          className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1"
+          title="Save Backup"
+          type="button"
+        >
+          <Save size={14} />
+          <span className="text-xs">Save</span>
+        </button>
       </div>
     );
   };
@@ -1385,27 +1404,28 @@ const DigitalPlanner2026 = () => {
             <div className="pt-20 px-8">
               <div className="flex items-center justify-between mb-4">
                 <Breadcrumbs />
-                <div className="flex gap-2">
+                <div className="flex items-center gap-3">
                   {prev && (
                     <button
                       onClick={() => handleNavigation(prev)}
-                      className="px-4 py-2 rounded-lg border border-neutral-300 hover:bg-neutral-100 transition-colors flex items-center gap-2 text-sm"
-                      style={{ color: '#673147' }}
+                      className="flex items-center gap-2 hover:underline"
+                      style={{ color: '#A17188', fontFamily: "'Dancing Script', cursive", fontSize: '1.1rem' }}
                       title={`Previous: ${prev.label}`}
                     >
-                      <ChevronLeft size={16} />
+                      <ChevronLeft size={18} />
                       <span>Prev</span>
                     </button>
                   )}
+                  {prev && next && <span style={{ color: '#C5B358', fontSize: '1.2rem' }}>|</span>}
                   {next && (
                     <button
                       onClick={() => handleNavigation(next)}
-                      className="px-4 py-2 rounded-lg border border-neutral-300 hover:bg-neutral-100 transition-colors flex items-center gap-2 text-sm"
-                      style={{ color: '#673147' }}
+                      className="flex items-center gap-2 hover:underline"
+                      style={{ color: '#A17188', fontFamily: "'Dancing Script', cursive", fontSize: '1.1rem' }}
                       title={`Next: ${next.label}`}
                     >
                       <span>Next</span>
-                      <ChevronRight size={16} />
+                      <ChevronRight size={18} />
                     </button>
                   )}
                 </div>
@@ -1907,8 +1927,8 @@ const DigitalPlanner2026 = () => {
           <div className="h-full w-full bg-neutral-50 p-8 overflow-auto">
             <h1 className="text-4xl mb-8 text-center font-medium" style={{ color: '#A17188', fontFamily: 'Dancing Script, cursive' }}>{months[selectedDay.month - 1]} {selectedDay.day}, 2026</h1>
             <PageFormattingToolbar />
-            <div className="max-w-6xl mx-auto grid grid-cols-3 gap-6">
-              <div className="col-span-2 space-y-4">
+            <div className="max-w-6xl mx-auto grid grid-cols-2 gap-6">
+              <div className="space-y-4">
                 <Section title="Goals for the Day" bgColor="bg-neutral-200">
                   <SimpleTextArea
                     fieldKey={`${dayKey}-goals`}
@@ -1952,12 +1972,12 @@ const DigitalPlanner2026 = () => {
                     onAdd={addCheckboxItem}
                   />
                 </Section>
-                <Section title="Notes" bgColor="bg-neutral-100">
+                <Section title="Journal" bgColor="bg-neutral-100">
                   <SimpleTextArea
                     fieldKey={`${dayKey}-notes`}
-                    placeholder="Additional notes..."
+                    placeholder="Write your thoughts, reflections, and experiences..."
                     className="w-full p-3 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                    rows={4}
+                    rows={8}
                     value={textContent[`${dayKey}-notes`]}
                     onChange={handleTextChange}
                     onFocus={handleTextFocus}
