@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Menu, X, Home, Download, Upload, Bold, Italic, Highlighter, Palette, Type, Shield, Lock, Save } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Menu, X, Home, Upload, Bold, Italic, Highlighter, Palette, Type, Save } from 'lucide-react';
 
 // ============ ENCRYPTION UTILITIES ============
 
@@ -473,7 +473,6 @@ const DigitalPlanner2026 = () => {
   const [expandedMonths, setExpandedMonths] = useState({});
   const [showMenu, setShowMenu] = useState(false);
   const [breadcrumbs, setBreadcrumbs] = useState([]);
-  const [saveMessage, setSaveMessage] = useState('');
   const [isOpening, setIsOpening] = useState(false);
   const [selectedQuarter, setSelectedQuarter] = useState(1);
   const [selectedMonth, setSelectedMonth] = useState(1);
@@ -483,14 +482,9 @@ const DigitalPlanner2026 = () => {
   const [textContent, setTextContent] = useState({});
   const [checkboxLists, setCheckboxLists] = useState({});
 
-  // Auto-backup state
+  // Simple backup state - track directory and password
   const [backupDirectoryHandle, setBackupDirectoryHandle] = useState(null);
   const [backupPassword, setBackupPassword] = useState('');
-  const [lastBackupDate, setLastBackupDate] = useState('');
-  const [showBackupSetup, setShowBackupSetup] = useState(false);
-  const [showLoadBackup, setShowLoadBackup] = useState(false);
-  const [backupStatus, setBackupStatus] = useState('');
-  const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
 
   const activeTextareaRef = useRef(null);
 
@@ -519,19 +513,6 @@ const DigitalPlanner2026 = () => {
         console.error('Failed to load');
       }
     }
-
-    // Load auto-backup settings
-    const backupSettings = localStorage.getItem('planner2026-backup-settings');
-    if (backupSettings) {
-      try {
-        const settings = JSON.parse(backupSettings);
-        setLastBackupDate(settings.lastBackupDate || '');
-        setBackupPassword(settings.backupPassword || '');
-        setAutoBackupEnabled(settings.autoBackupEnabled || false);
-      } catch (e) {
-        console.error('Failed to load backup settings');
-      }
-    }
   }, []);
 
   useEffect(() => {
@@ -544,188 +525,111 @@ const DigitalPlanner2026 = () => {
   const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
   const getWeeksInMonth = (month) => Math.ceil(getDaysInMonth(month, 2026) / 7);
 
-  // Check if backup is needed (daily)
-  useEffect(() => {
-    if (!autoBackupEnabled || !backupDirectoryHandle || !backupPassword) return;
+  // Set/change backup password
+  const handleSetPassword = () => {
+    const password = prompt('Enter password to use for backups (min 8 characters):');
+    if (!password) return;
 
-    const checkAndBackup = async () => {
-      const today = new Date().toISOString().split('T')[0];
-      if (lastBackupDate !== today) {
-        try {
-          await performAutoBackup();
-        } catch (error) {
-          console.error('Auto-backup failed:', error);
-          setBackupStatus('Auto-backup failed: ' + error.message);
-        }
-      }
-    };
-
-    checkAndBackup();
-  }, [autoBackupEnabled, backupDirectoryHandle, backupPassword, lastBackupDate, textContent, checkboxLists]);
-
-  // Perform encrypted backup to directory
-  const performAutoBackup = async () => {
-    if (!backupDirectoryHandle || !backupPassword) {
-      throw new Error('Backup not configured');
+    if (password.length < 8) {
+      alert('Password must be at least 8 characters');
+      return;
     }
 
+    setBackupPassword(password);
+    alert('Password set successfully! It will be used for all saves.');
+  };
+
+  // Simple Save: pick directory if needed, use stored or prompt for password, save encrypted file
+  const handleSaveBackup = async () => {
     try {
-      // Check if we still have permission
-      const permission = await backupDirectoryHandle.queryPermission({ mode: 'readwrite' });
-      if (permission !== 'granted') {
-        const newPermission = await backupDirectoryHandle.requestPermission({ mode: 'readwrite' });
-        if (newPermission !== 'granted') {
-          throw new Error('Directory permission denied');
+      // Check if File System Access API is supported
+      if (!('showDirectoryPicker' in window)) {
+        alert('Save feature requires Chrome or Edge browser');
+        return;
+      }
+
+      // Request directory if not already set (must happen BEFORE prompt to preserve user gesture)
+      let dirHandle = backupDirectoryHandle;
+      if (!dirHandle) {
+        dirHandle = await window.showDirectoryPicker();
+        setBackupDirectoryHandle(dirHandle);
+      }
+
+      // Use stored password or prompt for new one
+      let password = backupPassword;
+      if (!password) {
+        password = prompt('Enter password to encrypt backup (min 8 characters):\n\nTip: Use "Set Password" in the menu to avoid entering it each time.');
+        if (!password) return;
+
+        if (password.length < 8) {
+          alert('Password must be at least 8 characters');
+          return;
         }
       }
 
+      // Encrypt and save
       const data = { textContent, checkboxLists };
-      const encryptedData = await encryptData(data, backupPassword);
-      const today = new Date().toISOString().split('T')[0];
-      const filename = `planner-backup-${today}.json`;
+      const encryptedData = await encryptData(data, password);
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      const filename = `planner-backup-${timestamp}.json`;
 
-      const fileHandle = await backupDirectoryHandle.getFileHandle(filename, { create: true });
+      const fileHandle = await dirHandle.getFileHandle(filename, { create: true });
       const writable = await fileHandle.createWritable();
       await writable.write(JSON.stringify(encryptedData, null, 2));
       await writable.close();
 
-      const newLastBackupDate = today;
-      setLastBackupDate(newLastBackupDate);
-
-      // Save backup settings
-      localStorage.setItem('planner2026-backup-settings', JSON.stringify({
-        lastBackupDate: newLastBackupDate,
-        backupPassword,
-        autoBackupEnabled
-      }));
-
-      setBackupStatus(`Backup successful: ${today}`);
-      setTimeout(() => setBackupStatus(''), 3000);
-    } catch (error) {
-      console.error('Backup error:', error);
-      throw error;
-    }
-  };
-
-  // Setup auto-backup (request directory and password)
-  const setupAutoBackup = async (password, confirmPassword) => {
-    if (password !== confirmPassword) {
-      alert('Passwords do not match');
-      return false;
-    }
-
-    if (password.length < 8) {
-      alert('Password must be at least 8 characters');
-      return false;
-    }
-
-    try {
-      // Check if File System Access API is supported
-      if (!('showDirectoryPicker' in window)) {
-        alert('Auto-backup is not supported in this browser. Please use Chrome or Edge.');
-        return false;
-      }
-
-      const dirHandle = await window.showDirectoryPicker();
-      setBackupDirectoryHandle(dirHandle);
-      setBackupPassword(password);
-      setAutoBackupEnabled(true);
-      setShowBackupSetup(false);
-
-      // Perform initial backup
-      const today = new Date().toISOString().split('T')[0];
-      setLastBackupDate(today);
-
-      // Save settings
-      localStorage.setItem('planner2026-backup-settings', JSON.stringify({
-        lastBackupDate: today,
-        backupPassword: password,
-        autoBackupEnabled: true
-      }));
-
-      // Perform first backup
-      setTimeout(async () => {
-        try {
-          const data = { textContent, checkboxLists };
-          const encryptedData = await encryptData(data, password);
-          const filename = `planner-backup-${today}.json`;
-
-          const fileHandle = await dirHandle.getFileHandle(filename, { create: true });
-          const writable = await fileHandle.createWritable();
-          await writable.write(JSON.stringify(encryptedData, null, 2));
-          await writable.close();
-
-          setBackupStatus('Auto-backup enabled! First backup completed.');
-          setTimeout(() => setBackupStatus(''), 3000);
-        } catch (error) {
-          console.error('Initial backup failed:', error);
-          setBackupStatus('Setup complete, but first backup failed: ' + error.message);
-        }
-      }, 100);
-
-      return true;
+      alert(`Backup saved successfully as ${filename}`);
     } catch (error) {
       if (error.name === 'AbortError') {
-        // User cancelled directory picker
-        return false;
+        // User cancelled
+        return;
       }
-      console.error('Setup error:', error);
-      alert('Failed to setup auto-backup: ' + error.message);
-      return false;
+      console.error('Save error:', error);
+      alert('Failed to save backup: ' + error.message);
     }
   };
 
-  // Load encrypted backup from file
-  const loadEncryptedBackup = async (file, password) => {
+  // Simple Load: pick file, prompt for password, decrypt and load
+  const handleLoadBackup = async () => {
     try {
+      // Check if File System Access API is supported
+      if (!('showOpenFilePicker' in window)) {
+        alert('Load feature requires Chrome or Edge browser');
+        return;
+      }
+
+      // Pick file
+      const [fileHandle] = await window.showOpenFilePicker({
+        types: [{
+          description: 'JSON Files',
+          accept: { 'application/json': ['.json'] }
+        }]
+      });
+
+      const file = await fileHandle.getFile();
       const text = await file.text();
       const encryptedPayload = JSON.parse(text);
-      const decryptedData = await decryptData(encryptedPayload, password);
 
+      // Prompt for password
+      const password = prompt('Enter password to decrypt backup:');
+      if (!password) return;
+
+      // Decrypt and load
+      const decryptedData = await decryptData(encryptedPayload, password);
       setTextContent(decryptedData.textContent || {});
       setCheckboxLists(decryptedData.checkboxLists || {});
 
-      setShowLoadBackup(false);
-      setBackupStatus('Backup loaded successfully!');
-      setTimeout(() => setBackupStatus(''), 3000);
-      return true;
+      alert('Backup loaded successfully!');
     } catch (error) {
-      console.error('Load backup error:', error);
-      alert('Failed to load backup: ' + error.message);
-      return false;
+      if (error.name === 'AbortError') {
+        // User cancelled
+        return;
+      }
+      console.error('Load error:', error);
+      alert('Failed to load backup. Check your password and try again.');
     }
   };
 
-  const downloadData = () => {
-    const dataStr = JSON.stringify({ textContent, checkboxLists }, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'planner-2026-backup.json';
-    link.click();
-    setSaveMessage('Downloaded!');
-    setTimeout(() => setSaveMessage(''), 2000);
-  };
-
-  const uploadData = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const data = JSON.parse(event.target.result);
-          setTextContent(data.textContent || {});
-          setCheckboxLists(data.checkboxLists || {});
-          setSaveMessage('Loaded!');
-          setTimeout(() => setSaveMessage(''), 2000);
-        } catch (err) {
-          alert('Invalid file');
-        }
-      };
-      reader.readAsText(file);
-    }
-  };
 
   const handleOpenPlanner = () => {
     setIsOpening(true);
@@ -1030,174 +934,14 @@ const DigitalPlanner2026 = () => {
 
         {/* Save Button */}
         <button
-          onClick={downloadData}
+          onClick={handleSaveBackup}
           className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1"
-          title="Save Backup"
+          title="Save Encrypted Backup"
           type="button"
         >
           <Save size={14} />
           <span className="text-xs">Save</span>
         </button>
-      </div>
-    );
-  };
-
-  // Backup Setup Modal
-  const BackupSetupModal = () => {
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-
-    const handleSetup = async () => {
-      const success = await setupAutoBackup(password, confirmPassword);
-      if (success) {
-        setPassword('');
-        setConfirmPassword('');
-      }
-    };
-
-    if (!showBackupSetup) return null;
-
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)' }}>
-        <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4" style={{ backgroundColor: '#ffffff' }}>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-medium" style={{ color: '#A17188' }}>Setup Auto-Backup</h2>
-            <button onClick={() => setShowBackupSetup(false)} className="text-neutral-700 hover:text-neutral-900">
-              <X size={24} />
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-neutral-600 mb-4">
-                Enable daily encrypted backups to a folder of your choice. Your data will be encrypted with a password before saving.
-              </p>
-              <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
-                <p className="text-xs text-yellow-800">
-                  <strong>Important:</strong> If you forget your password, you won't be able to recover encrypted backups. Consider also using the manual "Download Backup" feature.
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Backup Password (min 8 characters)
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-500"
-                placeholder="Enter password"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-500"
-                placeholder="Confirm password"
-              />
-            </div>
-
-            <button
-              onClick={handleSetup}
-              className="w-full p-3 bg-neutral-700 hover:bg-neutral-800 text-white rounded font-medium flex items-center justify-center gap-2"
-            >
-              <Shield size={18} /> Setup Auto-Backup
-            </button>
-
-            <p className="text-xs text-neutral-500 text-center">
-              You'll be asked to select a folder where encrypted backups will be saved daily.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Load Encrypted Backup Modal
-  const LoadBackupModal = () => {
-    const [password, setPassword] = useState('');
-    const [selectedFile, setSelectedFile] = useState(null);
-    const fileInputRef = useRef(null);
-
-    const handleLoad = async () => {
-      if (!selectedFile) {
-        alert('Please select a backup file');
-        return;
-      }
-      if (!password) {
-        alert('Please enter the password');
-        return;
-      }
-
-      await loadEncryptedBackup(selectedFile, password);
-      setPassword('');
-      setSelectedFile(null);
-    };
-
-    if (!showLoadBackup) return null;
-
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)' }}>
-        <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4" style={{ backgroundColor: '#ffffff' }}>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-medium" style={{ color: '#A17188' }}>Load Encrypted Backup</h2>
-            <button onClick={() => { setShowLoadBackup(false); setPassword(''); setSelectedFile(null); }} className="text-neutral-700 hover:text-neutral-900">
-              <X size={24} />
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-neutral-600 mb-4">
-                Select an encrypted backup file and enter the password to restore your data.
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Backup File
-              </label>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                onChange={(e) => setSelectedFile(e.target.files[0])}
-                className="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-500 text-sm"
-              />
-              {selectedFile && (
-                <p className="text-xs text-green-600 mt-1">Selected: {selectedFile.name}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-500"
-                placeholder="Enter password"
-              />
-            </div>
-
-            <button
-              onClick={handleLoad}
-              className="w-full p-3 bg-neutral-700 hover:bg-neutral-800 text-white rounded font-medium flex items-center justify-center gap-2"
-            >
-              <Lock size={18} /> Load Backup
-            </button>
-          </div>
-        </div>
       </div>
     );
   };
@@ -1212,51 +956,20 @@ const DigitalPlanner2026 = () => {
         </div>
           
           <div className="mb-4 space-y-2">
-            <button onClick={downloadData} className="w-full p-2 bg-neutral-200 hover:bg-neutral-300 rounded flex items-center gap-2 justify-center text-neutral-700">
-              <Download size={16} /> Download Backup
+            <button onClick={handleSetPassword} className="w-full p-2 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center gap-2 justify-center text-sm">
+              {backupPassword ? '🔑 Change Password' : '🔑 Set Password'}
             </button>
-            <label className="w-full p-2 bg-neutral-200 hover:bg-neutral-300 rounded flex items-center gap-2 justify-center cursor-pointer text-neutral-700">
+            {backupPassword && (
+              <div className="bg-green-50 border border-green-200 rounded p-2">
+                <p className="text-xs text-green-700">✓ Password is set</p>
+              </div>
+            )}
+            <button onClick={handleSaveBackup} className="w-full p-2 bg-neutral-700 hover:bg-neutral-800 text-white rounded flex items-center gap-2 justify-center">
+              <Save size={16} /> Save Backup
+            </button>
+            <button onClick={handleLoadBackup} className="w-full p-2 bg-neutral-200 hover:bg-neutral-300 rounded flex items-center gap-2 justify-center text-neutral-700">
               <Upload size={16} /> Load Backup
-              <input type="file" accept=".json" onChange={uploadData} className="hidden" />
-            </label>
-
-            <div className="border-t border-neutral-300 pt-2 mt-2">
-              <p className="text-xs text-neutral-500 mb-2 font-semibold">Encrypted Auto-Backup</p>
-              {autoBackupEnabled ? (
-                <>
-                  <div className="bg-green-50 border border-green-200 rounded p-2 mb-2">
-                    <p className="text-xs text-green-700 flex items-center gap-1">
-                      <Shield size={12} /> Auto-backup enabled
-                    </p>
-                    {lastBackupDate && (
-                      <p className="text-xs text-green-600 mt-1">Last: {lastBackupDate}</p>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => setAutoBackupEnabled(false)}
-                    className="w-full p-2 bg-red-100 hover:bg-red-200 rounded text-xs text-red-700"
-                  >
-                    Disable Auto-Backup
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => setShowBackupSetup(true)}
-                  className="w-full p-2 bg-neutral-700 hover:bg-neutral-800 text-white rounded flex items-center gap-2 justify-center"
-                >
-                  <Shield size={16} /> Setup Auto-Backup
-                </button>
-              )}
-              <button
-                onClick={() => setShowLoadBackup(true)}
-                className="w-full p-2 bg-neutral-200 hover:bg-neutral-300 rounded flex items-center gap-2 justify-center text-neutral-700 mt-2"
-              >
-                <Lock size={16} /> Load Encrypted Backup
-              </button>
-            </div>
-
-            {saveMessage && <div className="text-center text-green-600 text-sm mt-2">{saveMessage}</div>}
-            {backupStatus && <div className="text-center text-green-600 text-sm mt-2">{backupStatus}</div>}
+            </button>
           </div>
           
           <div className="space-y-3">
@@ -1476,8 +1189,6 @@ const DigitalPlanner2026 = () => {
           </div>
         </div>
         <NavigationMenu />
-        <BackupSetupModal />
-        <LoadBackupModal />
       </>
     );
   }
@@ -1541,8 +1252,6 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
-        <BackupSetupModal />
-        <LoadBackupModal />
       </>
     );
   }
@@ -1615,8 +1324,6 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
-        <BackupSetupModal />
-        <LoadBackupModal />
       </>
     );
   }
@@ -1653,8 +1360,6 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
-        <BackupSetupModal />
-        <LoadBackupModal />
       </>
     );
   }
@@ -1717,8 +1422,6 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
-        <BackupSetupModal />
-        <LoadBackupModal />
       </>
     );
   }
@@ -1767,8 +1470,6 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
-        <BackupSetupModal />
-        <LoadBackupModal />
       </>
     );
   }
@@ -1842,8 +1543,6 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
-        <BackupSetupModal />
-        <LoadBackupModal />
       </>
     );
   }
@@ -1999,8 +1698,6 @@ const DigitalPlanner2026 = () => {
           </div>
         </PageHeader>
         <NavigationMenu />
-        <BackupSetupModal />
-        <LoadBackupModal />
       </>
     );
   }
@@ -2009,8 +1706,6 @@ const DigitalPlanner2026 = () => {
     <>
       <div className="h-full w-full bg-neutral-50 flex items-center justify-center"><p className="text-neutral-700">Navigate using the menu</p></div>
       <NavigationMenu />
-      <BackupSetupModal />
-      <LoadBackupModal />
     </>
   );
 };
