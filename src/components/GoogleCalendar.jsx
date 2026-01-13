@@ -25,6 +25,18 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
             discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
           });
           gapiInitialized.current = true;
+
+          // Restore token from sessionStorage if available
+          const savedToken = sessionStorage.getItem('gcal_token');
+          if (savedToken) {
+            try {
+              const token = JSON.parse(savedToken);
+              window.gapi.client.setToken(token);
+              setIsSignedIn(true);
+            } catch (e) {
+              sessionStorage.removeItem('gcal_token');
+            }
+          }
         } catch (err) {
           console.error('Error initializing GAPI:', err);
           setError('Failed to initialize Google Calendar API');
@@ -37,7 +49,16 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
           client_id: CLIENT_ID,
           scope: SCOPES,
           callback: (response) => {
+            if (response.error) {
+              console.error('OAuth error:', response.error);
+              setError('Failed to sign in: ' + response.error);
+              return;
+            }
             if (response.access_token) {
+              // Set the token on the GAPI client so API calls are authenticated
+              window.gapi.client.setToken(response);
+              // Save token to sessionStorage for persistence across navigation
+              sessionStorage.setItem('gcal_token', JSON.stringify(response));
               setIsSignedIn(true);
               setError('');
             }
@@ -77,6 +98,7 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
       window.google.accounts.oauth2.revoke(token.access_token);
       window.gapi.client.setToken(null);
     }
+    sessionStorage.removeItem('gcal_token');
     setIsSignedIn(false);
     setEvents([]);
   };
