@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 // Rich text contentEditable div - manages its own state, syncs to parent on blur
-const SimpleTextArea = ({ fieldKey, placeholder, className, rows = 2, value, onChange, onFocus }) => {
+const SimpleTextArea = ({ fieldKey, placeholder, className, style, rows = 2, value, onChange, onFocus }) => {
   const divRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -53,7 +53,8 @@ const SimpleTextArea = ({ fieldKey, placeholder, className, rows = 2, value, onC
         wordBreak: 'break-word',
         fontFamily: "'Merriweather', Georgia, serif",
         fontSize: '0.95rem',
-        lineHeight: '1.6'
+        lineHeight: '1.6',
+        ...style
       }}
       suppressContentEditableWarning
     />

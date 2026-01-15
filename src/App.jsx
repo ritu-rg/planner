@@ -286,11 +286,11 @@ const DigitalPlanner2026 = () => {
     ];
 
     return (
-      <div className="sticky top-0 z-10 mb-4 p-3 bg-white rounded-lg border border-neutral-300 shadow-sm flex gap-2 flex-wrap items-center max-w-5xl mx-auto">
-        <button onMouseDown={(e) => { e.preventDefault(); applyFormat('bold'); }} className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1" title="Bold" type="button">
+      <div className="sticky top-0 z-10 mb-4 p-3 rounded-lg shadow-sm flex gap-2 flex-wrap items-center max-w-5xl mx-auto" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid rgba(103, 49, 71, 0.2)' }}>
+        <button onMouseDown={(e) => { e.preventDefault(); applyFormat('bold'); }} className="p-2 rounded flex items-center gap-1" style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }} title="Bold" type="button">
           <Bold size={14} /> <span className="text-xs">Bold</span>
         </button>
-        <button onMouseDown={(e) => { e.preventDefault(); applyFormat('italic'); }} className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1" title="Italic" type="button">
+        <button onMouseDown={(e) => { e.preventDefault(); applyFormat('italic'); }} className="p-2 rounded flex items-center gap-1" style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }} title="Italic" type="button">
           <Italic size={14} /> <span className="text-xs">Italic</span>
         </button>
 
@@ -298,14 +298,15 @@ const DigitalPlanner2026 = () => {
         <div className="relative">
           <button
             onMouseDown={(e) => { e.preventDefault(); setShowHighlightPicker(!showHighlightPicker); }}
-            className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1"
+            className="p-2 rounded flex items-center gap-1"
+            style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }}
             title="Highlight"
             type="button"
           >
             <Highlighter size={14} /> <span className="text-xs">Highlight</span>
           </button>
           {showHighlightPicker && (
-            <div className="absolute top-full mt-1 bg-white border border-neutral-300 rounded shadow-lg p-2 flex gap-1 z-20">
+            <div className="absolute top-full mt-1 rounded shadow-lg p-2 flex gap-1 z-20" style={{ backgroundColor: '#FBEAD6', border: '1px solid #C4A574' }}>
               {highlightColors.map(color => (
                 <button
                   key={color.value}
@@ -340,14 +341,15 @@ const DigitalPlanner2026 = () => {
         <div className="relative">
           <button
             onMouseDown={(e) => { e.preventDefault(); setShowColorPicker(!showColorPicker); }}
-            className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1"
+            className="p-2 rounded flex items-center gap-1"
+            style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }}
             title="Text Color"
             type="button"
           >
             <Palette size={14} /> <span className="text-xs">Color</span>
           </button>
           {showColorPicker && (
-            <div className="absolute top-full mt-1 bg-white border border-neutral-300 rounded shadow-lg p-2 flex gap-1 z-20">
+            <div className="absolute top-full mt-1 rounded shadow-lg p-2 flex gap-1 z-20" style={{ backgroundColor: '#FBEAD6', border: '1px solid #C4A574' }}>
               {textColors.map(color => (
                 <button
                   key={color.value}
@@ -372,14 +374,15 @@ const DigitalPlanner2026 = () => {
         <div className="relative">
           <button
             onMouseDown={(e) => { e.preventDefault(); setShowFontPicker(!showFontPicker); }}
-            className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1"
+            className="p-2 rounded flex items-center gap-1"
+            style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }}
             title="Font Style"
             type="button"
           >
             <Type size={14} /> <span className="text-xs">Font</span>
           </button>
           {showFontPicker && (
-            <div className="absolute top-full mt-1 bg-white border border-neutral-300 rounded shadow-lg p-2 z-20 min-w-40">
+            <div className="absolute top-full mt-1 rounded shadow-lg p-2 z-20 min-w-40" style={{ backgroundColor: '#FBEAD6', border: '1px solid #C4A574' }}>
               {fontFamilies.map(font => (
                 <button
                   key={font.value}
@@ -404,14 +407,15 @@ const DigitalPlanner2026 = () => {
         <div className="relative">
           <button
             onMouseDown={(e) => { e.preventDefault(); setShowSizePicker(!showSizePicker); }}
-            className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1"
+            className="p-2 rounded flex items-center gap-1"
+            style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }}
             title="Font Size"
             type="button"
           >
             <span className="text-xs font-semibold">A</span><span className="text-xs">Size</span>
           </button>
           {showSizePicker && (
-            <div className="absolute top-full mt-1 bg-white border border-neutral-300 rounded shadow-lg p-2 z-20 min-w-32">
+            <div className="absolute top-full mt-1 rounded shadow-lg p-2 z-20 min-w-32" style={{ backgroundColor: '#FBEAD6', border: '1px solid #C4A574' }}>
               {fontSizes.map(size => (
                 <button
                   key={size.value}
@@ -420,7 +424,8 @@ const DigitalPlanner2026 = () => {
                     applyFormat('fontSize', size.value);
                     setShowSizePicker(false);
                   }}
-                  className="w-full text-left px-3 py-2 hover:bg-neutral-100 rounded text-sm"
+                  className="w-full text-left px-3 py-2 rounded text-sm"
+                  style={{ color: '#673147' }}
                   title={size.name}
                   type="button"
                 >
@@ -435,14 +440,15 @@ const DigitalPlanner2026 = () => {
         <div className="relative">
           <button
             onMouseDown={(e) => { e.preventDefault(); setShowHeadingPicker(!showHeadingPicker); }}
-            className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1"
+            className="p-2 rounded flex items-center gap-1"
+            style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }}
             title="Heading"
             type="button"
           >
             <Type size={14} /> <span className="text-xs">Heading</span>
           </button>
           {showHeadingPicker && (
-            <div className="absolute top-full mt-1 bg-white border border-neutral-300 rounded shadow-lg p-2 z-20 min-w-40">
+            <div className="absolute top-full mt-1 rounded shadow-lg p-2 z-20 min-w-40" style={{ backgroundColor: '#FBEAD6', border: '1px solid #C4A574' }}>
               {headingOptions.map(heading => (
                 <button
                   key={heading.value}
@@ -451,8 +457,9 @@ const DigitalPlanner2026 = () => {
                     applyFormat('formatBlock', `<${heading.value}>`);
                     setShowHeadingPicker(false);
                   }}
-                  className="w-full text-left px-3 py-2 hover:bg-neutral-100 rounded"
+                  className="w-full text-left px-3 py-2 rounded"
                   style={{
+                    color: '#673147',
                     fontSize: heading.value === 'h1' ? '1.5rem' :
                               heading.value === 'h2' ? '1.25rem' :
                               heading.value === 'h3' ? '1.125rem' : '1rem',
@@ -468,7 +475,7 @@ const DigitalPlanner2026 = () => {
           )}
         </div>
 
-        <button onMouseDown={(e) => { e.preventDefault(); applyFormat('insertUnorderedList'); }} className="p-2 hover:bg-neutral-200 rounded text-xs" title="Bullet List" type="button">
+        <button onMouseDown={(e) => { e.preventDefault(); applyFormat('insertUnorderedList'); }} className="p-2 rounded text-xs" style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }} title="Bullet List" type="button">
           • Bullet
         </button>
 
@@ -478,7 +485,8 @@ const DigitalPlanner2026 = () => {
         {/* Save Button */}
         <button
           onClick={handleSaveBackup}
-          className="p-2 hover:bg-neutral-200 rounded flex items-center gap-1"
+          className="p-2 rounded flex items-center gap-1"
+          style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }}
           title="Save Encrypted Backup"
           type="button"
         >
@@ -491,56 +499,56 @@ const DigitalPlanner2026 = () => {
 
   const NavigationMenu = () => (
     <>
-      <div className={`fixed left-0 top-0 h-full w-80 bg-neutral-50 shadow-xl overflow-y-auto transition-all duration-300 z-40 ${showMenu ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={`fixed left-0 top-0 h-full w-80 shadow-xl overflow-y-auto transition-all duration-300 z-40 ${showMenu ? 'translate-x-0' : '-translate-x-full'}`} style={{ backgroundColor: '#FBEAD6' }}>
         <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl text-neutral-700 font-medium" style={{ fontFamily: "'Dancing Script', cursive" }}>Menu</h2>
-          <button onClick={() => setShowMenu(false)} className="text-neutral-700 hover:text-neutral-900"><X size={24} /></button>
+          <div className="flex justify-between items-center mb-6 pb-3" style={{ borderBottom: '2px solid #C4A574' }}>
+          <h2 className="text-2xl font-bold" style={{ color: '#673147', fontFamily: "'Dancing Script', cursive" }}>Menu</h2>
+          <button onClick={() => setShowMenu(false)} style={{ color: '#673147' }}><X size={24} /></button>
         </div>
-          
+
           <div className="mb-4 space-y-2">
-            <button onClick={handleSetPassword} className="w-full p-2 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center gap-2 justify-center text-sm">
+            <button onClick={handleSetPassword} className="w-full p-2 rounded flex items-center gap-2 justify-center text-sm" style={{ backgroundColor: '#A17188', color: '#FBEAD6' }}>
               {backupPassword ? '🔑 Change Password' : '🔑 Set Password'}
             </button>
             {backupPassword && (
-              <div className="bg-green-50 border border-green-200 rounded p-2">
-                <p className="text-xs text-green-700">✓ Password is set</p>
+              <div className="rounded p-2" style={{ backgroundColor: 'rgba(242, 198, 222, 0.5)', border: '1px solid #C4A574' }}>
+                <p className="text-xs" style={{ color: '#673147' }}>✓ Password is set</p>
               </div>
             )}
-            <button onClick={handleSaveBackup} className="w-full p-2 bg-neutral-700 hover:bg-neutral-800 text-white rounded flex items-center gap-2 justify-center">
+            <button onClick={handleSaveBackup} className="w-full p-2 rounded flex items-center gap-2 justify-center" style={{ backgroundColor: '#673147', color: '#FBEAD6' }}>
               <Save size={16} /> Save Backup
             </button>
-            <button onClick={handleLoadBackup} className="w-full p-2 bg-neutral-200 hover:bg-neutral-300 rounded flex items-center gap-2 justify-center text-neutral-700">
+            <button onClick={handleLoadBackup} className="w-full p-2 rounded flex items-center gap-2 justify-center" style={{ backgroundColor: 'rgba(242, 198, 222, 0.5)', border: '1px solid #C4A574', color: '#673147' }}>
               <Upload size={16} /> Load Backup
             </button>
           </div>
-          
+
           <div className="space-y-3">
-            <div onClick={() => navigateTo('contents', { page: 'contents', label: 'Contents' })} className="p-3 bg-neutral-200 hover:bg-neutral-300 rounded cursor-pointer text-neutral-700">Contents</div>
-            <div onClick={() => navigateTo('calendar', { page: 'calendar', label: '2026 Calendar' })} className="p-3 bg-neutral-200 hover:bg-neutral-300 rounded cursor-pointer text-neutral-700">2026 Calendar</div>
-            <div onClick={() => navigateTo('yearly', { page: 'yearly', label: 'Yearly Overview' })} className="p-3 bg-neutral-200 hover:bg-neutral-300 rounded cursor-pointer text-neutral-700">Yearly Overview</div>
+            <div onClick={() => navigateTo('contents', { page: 'contents', label: 'Contents' })} className="p-3 rounded cursor-pointer" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid rgba(103, 49, 71, 0.2)', color: '#673147' }}>Contents</div>
+            <div onClick={() => navigateTo('calendar', { page: 'calendar', label: '2026 Calendar' })} className="p-3 rounded cursor-pointer" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid rgba(103, 49, 71, 0.2)', color: '#673147' }}>2026 Calendar</div>
+            <div onClick={() => navigateTo('yearly', { page: 'yearly', label: 'Yearly Overview' })} className="p-3 rounded cursor-pointer" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid rgba(103, 49, 71, 0.2)', color: '#673147' }}>Yearly Overview</div>
             {[1, 2, 3, 4].map(q => (
-              <div key={q} onClick={() => { setSelectedQuarter(q); navigateTo('quarter', { page: 'quarter', label: `Quarter ${q}`, quarter: q }); }} className="p-3 bg-neutral-200 hover:bg-neutral-300 rounded cursor-pointer text-neutral-700">Quarter {q}</div>
+              <div key={q} onClick={() => { setSelectedQuarter(q); navigateTo('quarter', { page: 'quarter', label: `Quarter ${q}`, quarter: q }); }} className="p-3 rounded cursor-pointer" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid rgba(103, 49, 71, 0.2)', color: '#673147' }}>Quarter {q}</div>
             ))}
             {months.map((month, idx) => (
               <div key={idx}>
-                <div onClick={() => toggleMonth(idx)} className="p-3 bg-neutral-300 hover:bg-neutral-400 rounded cursor-pointer flex justify-between items-center text-neutral-700">
+                <div onClick={() => toggleMonth(idx)} className="p-3 rounded cursor-pointer flex justify-between items-center" style={{ backgroundColor: 'rgba(161, 113, 136, 0.3)', border: '1px solid rgba(103, 49, 71, 0.2)', color: '#673147' }}>
                   <span>{month}</span>
                   {expandedMonths[idx] ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </div>
                 {expandedMonths[idx] && (
                   <div className="ml-4 mt-2 space-y-2">
-                    <div onClick={() => { setSelectedMonth(idx + 1); navigateTo('month-calendar', { page: 'month-calendar', label: `${month} Calendar`, month: idx + 1 }); }} className="p-2 bg-neutral-100 hover:bg-neutral-200 rounded cursor-pointer text-sm text-neutral-700">→ Calendar</div>
-                    <div onClick={() => { setSelectedMonth(idx + 1); navigateTo('month-overview', { page: 'month-overview', label: `${month} Overview`, month: idx + 1 }); }} className="p-2 bg-neutral-100 hover:bg-neutral-200 rounded cursor-pointer text-sm text-neutral-700">→ Overview</div>
+                    <div onClick={() => { setSelectedMonth(idx + 1); navigateTo('month-calendar', { page: 'month-calendar', label: `${month} Calendar`, month: idx + 1 }); }} className="p-2 rounded cursor-pointer text-sm" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', color: '#673147' }}>→ Calendar</div>
+                    <div onClick={() => { setSelectedMonth(idx + 1); navigateTo('month-overview', { page: 'month-overview', label: `${month} Overview`, month: idx + 1 }); }} className="p-2 rounded cursor-pointer text-sm" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', color: '#673147' }}>→ Overview</div>
                     <div className="ml-2">
-                      <div onClick={() => setExpandedMonths(prev => ({ ...prev, [`${idx}-weeks`]: !prev[`${idx}-weeks`] }))} className="p-2 bg-neutral-100 hover:bg-neutral-200 cursor-pointer rounded text-sm flex justify-between items-center" style={{ color: '#673147' }}>
+                      <div onClick={() => setExpandedMonths(prev => ({ ...prev, [`${idx}-weeks`]: !prev[`${idx}-weeks`] }))} className="p-2 cursor-pointer rounded text-sm flex justify-between items-center" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', color: '#673147' }}>
                         <span>Weekly Views</span>
                         {expandedMonths[`${idx}-weeks`] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                       </div>
                       {expandedMonths[`${idx}-weeks`] && (
                         <div className="ml-4 mt-1 space-y-1">
                           {Array.from({ length: getWeeksInMonth(idx + 1) }, (_, i) => (
-                            <div key={i} onClick={() => { setSelectedMonth(idx + 1); setSelectedWeek(i + 1); navigateTo('week', { page: 'week', label: `Week ${i + 1}`, month: idx + 1, week: i + 1 }); }} className="p-2 bg-neutral-50 hover:bg-neutral-200 cursor-pointer rounded text-xs" style={{ color: '#673147' }}>Week {i + 1}</div>
+                            <div key={i} onClick={() => { setSelectedMonth(idx + 1); setSelectedWeek(i + 1); navigateTo('week', { page: 'week', label: `Week ${i + 1}`, month: idx + 1, week: i + 1 }); }} className="p-2 cursor-pointer rounded text-xs" style={{ backgroundColor: 'rgba(251, 234, 214, 0.5)', color: '#673147' }}>Week {i + 1}</div>
                           ))}
                         </div>
                       )}
@@ -556,14 +564,14 @@ const DigitalPlanner2026 = () => {
   );
 
   const Breadcrumbs = () => (
-    <div className="flex items-center gap-3 mb-6 flex-wrap" style={{ fontSize: '1rem' }}>
-      <button onClick={() => { setBreadcrumbs([]); navigateTo('cover'); }} className="flex items-center gap-2 hover:underline" style={{ color: '#A17188', fontFamily: "'Dancing Script', cursive", fontSize: '1.1rem' }}>
-        <Home size={18} /> Home
+    <div className="flex items-center gap-3 mb-6 flex-wrap rounded-lg px-4 py-2" style={{ fontSize: '1rem', backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid rgba(103, 49, 71, 0.2)' }}>
+      <button onClick={() => { setBreadcrumbs([]); navigateTo('cover'); }} className="flex items-center gap-2 px-4 py-1.5 rounded text-sm" style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }}>
+        <Home size={16} /> Home
       </button>
       {breadcrumbs.map((crumb, index) => (
         <React.Fragment key={index}>
           <span style={{ color: '#C5B358', fontSize: '1.2rem' }}>›</span>
-          <button onClick={() => navigateToBreadcrumb(index)} className="hover:underline" style={{ color: '#A17188', fontFamily: "'Dancing Script', cursive", fontSize: '1.1rem' }}>{crumb.label}</button>
+          <button onClick={() => navigateToBreadcrumb(index)} className="px-4 py-1.5 rounded text-sm" style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }}>{crumb.label}</button>
         </React.Fragment>
       ))}
     </div>
@@ -644,7 +652,17 @@ const DigitalPlanner2026 = () => {
       setSelectedDay({ month: navInfo.month, day: navInfo.day });
     }
 
-    navigateTo(navInfo.page, navInfo.label);
+    // Build proper crumb object for breadcrumbs
+    const crumb = {
+      page: navInfo.page,
+      label: navInfo.label,
+      ...(navInfo.quarter !== undefined && { quarter: navInfo.quarter }),
+      ...(navInfo.month !== undefined && { month: navInfo.month }),
+      ...(navInfo.week !== undefined && { week: navInfo.week }),
+      ...(navInfo.day !== undefined && { day: { month: navInfo.month, day: navInfo.day } })
+    };
+
+    navigateTo(navInfo.page, crumb);
   };
 
   const PageHeader = ({ children }) => {
@@ -664,24 +682,23 @@ const DigitalPlanner2026 = () => {
                   {prev && (
                     <button
                       onClick={() => handleNavigation(prev)}
-                      className="flex items-center gap-2 hover:underline"
-                      style={{ color: '#A17188', fontFamily: "'Dancing Script', cursive", fontSize: '1.1rem' }}
+                      className="flex items-center gap-2 px-4 py-1.5 rounded text-sm"
+                      style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }}
                       title={`Previous: ${prev.label}`}
                     >
-                      <ChevronLeft size={18} />
+                      <ChevronLeft size={16} />
                       <span>Prev</span>
                     </button>
                   )}
-                  {prev && next && <span style={{ color: '#C5B358', fontSize: '1.2rem' }}>|</span>}
                   {next && (
                     <button
                       onClick={() => handleNavigation(next)}
-                      className="flex items-center gap-2 hover:underline"
-                      style={{ color: '#A17188', fontFamily: "'Dancing Script', cursive", fontSize: '1.1rem' }}
+                      className="flex items-center gap-2 px-4 py-1.5 rounded text-sm"
+                      style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }}
                       title={`Next: ${next.label}`}
                     >
                       <span>Next</span>
-                      <ChevronRight size={18} />
+                      <ChevronRight size={16} />
                     </button>
                   )}
                 </div>
@@ -742,55 +759,64 @@ const DigitalPlanner2026 = () => {
     return (
       <>
         <PageHeader>
-          <div className="h-full w-full bg-neutral-50 p-8 overflow-auto pt-20">
-            <h1 className="text-4xl mb-8 text-center font-light" style={{ color: '#A17188', fontFamily: "'Dancing Script', cursive" }}>Contents</h1>
-            <div className="space-y-4 max-w-2xl mx-auto">
-              <div style={sectionStyle} className="cursor-pointer hover:bg-neutral-100 rounded p-3 transition-colors" onClick={() => navigateTo('calendar', { page: 'calendar', label: '2026 Calendar' })}>
-                <h2 className="text-xl font-medium mb-2" style={{ color: '#A17188' }}>2026 Calendar</h2>
-              </div>
-              <div style={sectionStyle} className="cursor-pointer hover:bg-neutral-100 rounded p-3 transition-colors" onClick={() => navigateTo('yearly', { page: 'yearly', label: 'Yearly Overview' })}>
-                <h2 className="text-xl font-medium mb-2" style={{ color: '#A17188' }}>Yearly Overview</h2>
-              </div>
-              {[1,2,3,4].map(q => (
-                <div key={q} style={sectionStyle} className="cursor-pointer hover:bg-neutral-100 rounded p-3 transition-colors" onClick={() => { setSelectedQuarter(q); navigateTo('quarter', { page: 'quarter', label: `Quarter ${q}`, quarter: q }); }}>
-                  <h2 className="text-xl font-medium mb-2" style={{ color: '#A17188' }}>Quarter {q}</h2>
+          <div className="h-full w-full overflow-auto pt-20" style={{ backgroundColor: '#c6a4a4' }}>
+            <div className="max-w-2xl mx-auto p-6">
+              <h1 className="text-4xl mb-6 text-center font-medium" style={{ color: '#FBEAD6', fontFamily: "'Dancing Script', cursive", textShadow: '1px 1px 3px rgba(0,0,0,0.3)' }}>Contents</h1>
+              <div
+                className="rounded-lg p-6 space-y-4"
+                style={{
+                  backgroundColor: '#FBEAD6',
+                  border: '2px solid #C4A574',
+                  boxShadow: '0 10px 20px rgba(0,0,0,0.3)'
+                }}
+              >
+                <div style={sectionStyle} className="cursor-pointer rounded p-3 transition-colors" onClick={() => navigateTo('calendar', { page: 'calendar', label: '2026 Calendar' })} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                  <h2 className="text-xl font-bold" style={{ color: '#673147', fontFamily: 'Dancing Script, cursive' }}>2026 Calendar</h2>
                 </div>
-              ))}
-              {months.map((month, idx) => (
-                <div key={idx} style={sectionStyle} className="rounded">
-                  <div onClick={() => toggleMonth(idx)} className="cursor-pointer hover:bg-neutral-100 p-3 rounded transition-colors flex justify-between items-center">
-                    <h2 className="text-xl font-medium" style={{ color: '#A17188' }}>{month}</h2>
-                    {expandedMonths[idx] ? <ChevronUp size={24} style={{ color: '#673147' }} /> : <ChevronDown size={24} style={{ color: '#673147' }} />}
+                <div style={sectionStyle} className="cursor-pointer rounded p-3 transition-colors" onClick={() => navigateTo('yearly', { page: 'yearly', label: 'Yearly Overview' })} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                  <h2 className="text-xl font-bold" style={{ color: '#673147', fontFamily: 'Dancing Script, cursive' }}>Yearly Overview</h2>
+                </div>
+                {[1,2,3,4].map(q => (
+                  <div key={q} style={sectionStyle} className="cursor-pointer rounded p-3 transition-colors" onClick={() => { setSelectedQuarter(q); navigateTo('quarter', { page: 'quarter', label: `Quarter ${q}`, quarter: q }); }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                    <h2 className="text-xl font-bold" style={{ color: '#673147', fontFamily: 'Dancing Script, cursive' }}>Quarter {q}</h2>
                   </div>
-                  {expandedMonths[idx] && (
-                    <div className="space-y-2 mt-2">
-                      <div onClick={() => { setSelectedMonth(idx + 1); navigateTo('month-calendar', { page: 'month-calendar', label: `${month} Calendar`, month: idx + 1 }); }} className="ml-6 p-2 bg-neutral-100 hover:bg-neutral-200 cursor-pointer rounded text-sm" style={{ color: '#673147' }}>→ Calendar View</div>
-                      <div onClick={() => { setSelectedMonth(idx + 1); navigateTo('month-overview', { page: 'month-overview', label: `${month} Overview`, month: idx + 1 }); }} className="ml-6 p-2 bg-neutral-100 hover:bg-neutral-200 cursor-pointer rounded text-sm" style={{ color: '#673147' }}>→ Monthly Overview</div>
-                      <div className="ml-6">
-                        <div onClick={() => setExpandedMonths(prev => ({ ...prev, [`${idx}-weeks`]: !prev[`${idx}-weeks`] }))} className="p-2 bg-neutral-100 hover:bg-neutral-200 cursor-pointer rounded text-sm flex justify-between items-center" style={{ color: '#673147' }}>
-                          <span>Weekly Views</span>
-                          {expandedMonths[`${idx}-weeks`] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                ))}
+                {months.map((month, idx) => (
+                  <div key={idx} style={sectionStyle} className="rounded">
+                    <div onClick={() => toggleMonth(idx)} className="cursor-pointer p-3 rounded transition-colors flex justify-between items-center" onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                      <h2 className="text-xl font-bold" style={{ color: '#673147', fontFamily: 'Dancing Script, cursive' }}>{month}</h2>
+                      {expandedMonths[idx] ? <ChevronUp size={24} style={{ color: '#673147' }} /> : <ChevronDown size={24} style={{ color: '#673147' }} />}
+                    </div>
+                    {expandedMonths[idx] && (
+                      <div className="space-y-2 mt-2">
+                        <div onClick={() => { setSelectedMonth(idx + 1); navigateTo('month-calendar', { page: 'month-calendar', label: `${month} Calendar`, month: idx + 1 }); }} className="ml-6 p-2 cursor-pointer rounded text-sm transition-colors" style={{ color: '#673147', backgroundColor: 'rgba(242, 198, 222, 0.3)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.5)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.3)'}>→ Calendar View</div>
+                        <div onClick={() => { setSelectedMonth(idx + 1); navigateTo('month-overview', { page: 'month-overview', label: `${month} Overview`, month: idx + 1 }); }} className="ml-6 p-2 cursor-pointer rounded text-sm transition-colors" style={{ color: '#673147', backgroundColor: 'rgba(242, 198, 222, 0.3)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.5)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.3)'}>→ Monthly Overview</div>
+                        <div className="ml-6">
+                          <div onClick={() => setExpandedMonths(prev => ({ ...prev, [`${idx}-weeks`]: !prev[`${idx}-weeks`] }))} className="p-2 cursor-pointer rounded text-sm flex justify-between items-center transition-colors" style={{ color: '#673147', backgroundColor: 'rgba(242, 198, 222, 0.3)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.5)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.3)'}>
+                            <span>Weekly Views</span>
+                            {expandedMonths[`${idx}-weeks`] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                          </div>
+                          {expandedMonths[`${idx}-weeks`] && (
+                            <div className="ml-4 mt-1 space-y-1">
+                              {Array.from({ length: getWeeksInMonth(idx + 1) }, (_, i) => (
+                                <div key={i} onClick={() => { setSelectedMonth(idx + 1); setSelectedWeek(i + 1); navigateTo('week', { page: 'week', label: `Week ${i + 1}`, month: idx + 1, week: i + 1 }); }} className="p-2 cursor-pointer rounded text-xs transition-colors" style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.5)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.5)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(251, 234, 214, 0.5)'}>Week {i + 1}</div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                        {expandedMonths[`${idx}-weeks`] && (
-                          <div className="ml-4 mt-1 space-y-1">
-                            {Array.from({ length: getWeeksInMonth(idx + 1) }, (_, i) => (
-                              <div key={i} onClick={() => { setSelectedMonth(idx + 1); setSelectedWeek(i + 1); navigateTo('week', { page: 'week', label: `Week ${i + 1}`, month: idx + 1, week: i + 1 }); }} className="p-2 bg-neutral-50 hover:bg-neutral-200 cursor-pointer rounded text-xs" style={{ color: '#673147' }}>Week {i + 1}</div>
+                        <div className="pl-4 space-y-1">
+                          <div className="text-xs font-semibold p-2" style={{ color: '#A17188' }}>Daily Views:</div>
+                          <div className="grid grid-cols-7 gap-1">
+                            {Array.from({ length: getDaysInMonth(idx + 1, 2026) }, (_, i) => (
+                              <div key={i} onClick={() => { setSelectedDay({ month: idx + 1, day: i + 1 }); navigateTo('day', { page: 'day', label: `${month} ${i + 1}`, month: idx + 1, day: { month: idx + 1, day: i + 1 } }); }} className="p-2 cursor-pointer rounded text-center text-xs transition-colors" style={{ color: '#673147', backgroundColor: 'rgba(242, 198, 222, 0.3)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(161, 113, 136, 0.4)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(242, 198, 222, 0.3)'}>{i + 1}</div>
                             ))}
                           </div>
-                        )}
-                      </div>
-                      <div className="pl-4 space-y-1">
-                        <div className="text-xs text-neutral-600 font-semibold p-2">Daily Views:</div>
-                        <div className="grid grid-cols-7 gap-1">
-                          {Array.from({ length: getDaysInMonth(idx + 1, 2026) }, (_, i) => (
-                            <div key={i} onClick={() => { setSelectedDay({ month: idx + 1, day: i + 1 }); navigateTo('day', { page: 'day', label: `${month} ${i + 1}`, month: idx + 1, day: { month: idx + 1, day: i + 1 } }); }} className="p-2 bg-neutral-100 hover:bg-neutral-200 cursor-pointer rounded text-center text-xs text-neutral-700">{i + 1}</div>
-                          ))}
                         </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </PageHeader>
@@ -801,68 +827,137 @@ const DigitalPlanner2026 = () => {
 
   // YEARLY PAGE
   if (currentPage === 'yearly') {
+    // Binder ring component for yearly page
+    const YearlyBinderRings = () => (
+      <div className="flex-shrink-0 w-12 flex flex-col justify-around py-12 z-20" style={{ backgroundColor: '#A17188' }}>
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="flex justify-center">
+            <div
+              className="w-10 h-10 rounded-full"
+              style={{
+                background: 'linear-gradient(180deg, #E8D574 0%, #D4AF37 30%, #B8960C 70%, #8B7500 100%)',
+                boxShadow: '0 3px 6px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2)',
+                border: '2px solid #8B7500'
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    );
+
     return (
       <>
         <PageHeader>
-          <div className="h-full w-full bg-neutral-50 p-8 overflow-auto">
-            <h1 className="text-4xl mb-8 text-center font-medium" style={{ color: '#A17188', fontFamily: 'Dancing Script, cursive' }}>2026 Yearly Overview</h1>
+          <div className="h-full w-full overflow-auto" style={{ backgroundColor: '#c6a4a4' }}>
             <PageFormattingToolbar />
-            <div className="max-w-5xl mx-auto space-y-6">
-              <Section title="Overall Goals & Themes" bgColor="bg-neutral-200">
-                <SimpleTextArea
-                  fieldKey="yearly-goals"back to the
-                  placeholder="What do you want to achieve this year?"
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={5}
-                  value={textContent['yearly-goals']}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
-              <Section title="Action Plan" bgColor="bg-neutral-100">
-                <SimpleTextArea
-                  fieldKey="yearly-action"
-                  placeholder="How will you achieve your goals?"
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={5}
-                  value={textContent['yearly-action']}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
-              <Section title="Gratitude" bgColor="bg-neutral-200">
-                <SimpleTextArea
-                  fieldKey="yearly-gratitude"
-                  placeholder="What are you grateful for?"
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={4}
-                  value={textContent['yearly-gratitude']}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
-              <Section title="Motivation" bgColor="bg-neutral-100">
-                <SimpleTextArea
-                  fieldKey="yearly-motivation"
-                  placeholder="What keeps you motivated?"
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={4}
-                  value={textContent['yearly-motivation']}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
-              <Section title="Notes" bgColor="bg-neutral-200">
-                <SimpleTextArea
-                  fieldKey="yearly-notes"
-                  placeholder="Additional thoughts..."
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={4}
-                  value={textContent['yearly-notes']}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
+            <div className="max-w-7xl mx-auto p-6">
+              <h1 className="text-4xl mb-6 text-center font-medium" style={{ color: '#FBEAD6', fontFamily: 'Dancing Script, cursive', textShadow: '1px 1px 3px rgba(0,0,0,0.3)' }}>2026 Yearly Overview</h1>
+
+              {/* Open binder with pages */}
+              <div className="relative flex" style={{ minHeight: '80vh', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.4))' }}>
+                {/* Left page */}
+                <div
+                  className="flex-1 p-8 relative"
+                  style={{
+                    backgroundColor: '#FBEAD6',
+                    backgroundImage: `
+                      repeating-linear-gradient(#FBEAD6 0px, #FBEAD6 27px, #E8D5B7 28px),
+                      radial-gradient(ellipse at 100% 0%, rgba(139,109,79,0.15) 0%, transparent 50%),
+                      radial-gradient(ellipse at 100% 100%, rgba(139,109,79,0.1) 0%, transparent 50%)
+                    `,
+                    borderRadius: '4px 0 0 4px',
+                    boxShadow: 'inset -8px 0 20px rgba(0,0,0,0.12), inset 0 0 40px rgba(139,109,79,0.08)',
+                    border: '2px solid #C4A574',
+                    borderRight: 'none'
+                  }}
+                >
+                  <div className="space-y-4">
+                    <Section title="Overall Goals & Themes" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey="yearly-goals"
+                        placeholder="What do you want to achieve this year?"
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={5}
+                        value={textContent['yearly-goals']}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                    <Section title="Action Plan" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey="yearly-action"
+                        placeholder="How will you achieve your goals?"
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={5}
+                        value={textContent['yearly-action']}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                    <Section title="Gratitude" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey="yearly-gratitude"
+                        placeholder="What are you grateful for?"
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={4}
+                        value={textContent['yearly-gratitude']}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                  </div>
+                </div>
+
+                {/* Gold binder rings */}
+                <YearlyBinderRings />
+
+                {/* Right page */}
+                <div
+                  className="flex-1 p-8 relative"
+                  style={{
+                    backgroundColor: '#FBEAD6',
+                    backgroundImage: `
+                      repeating-linear-gradient(#FBEAD6 0px, #FBEAD6 27px, #E8D5B7 28px),
+                      radial-gradient(ellipse at 0% 0%, rgba(139,109,79,0.15) 0%, transparent 50%),
+                      radial-gradient(ellipse at 0% 100%, rgba(139,109,79,0.1) 0%, transparent 50%)
+                    `,
+                    borderRadius: '0 4px 4px 0',
+                    boxShadow: 'inset 8px 0 20px rgba(0,0,0,0.12), inset 0 0 40px rgba(139,109,79,0.08)',
+                    border: '2px solid #C4A574',
+                    borderLeft: 'none'
+                  }}
+                >
+                  <div className="space-y-4">
+                    <Section title="Motivation" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey="yearly-motivation"
+                        placeholder="What keeps you motivated?"
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={5}
+                        value={textContent['yearly-motivation']}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                    <Section title="Notes" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey="yearly-notes"
+                        placeholder="Additional thoughts..."
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={10}
+                        value={textContent['yearly-notes']}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </PageHeader>
@@ -876,29 +971,40 @@ const DigitalPlanner2026 = () => {
     return (
       <>
         <PageHeader>
-          <div className="h-full w-full bg-neutral-50 p-8 overflow-auto">
-            <h1 className="text-4xl mb-8 text-center font-medium" style={{ color: '#A17188', fontFamily: 'Dancing Script, cursive' }}>2026 Calendar</h1>
-            <div className="max-w-6xl mx-auto grid grid-cols-3 gap-4">
-              {months.map((month, idx) => {
-                const firstDay = new Date(2026, idx, 1).getDay();
-                const daysInMonth = getDaysInMonth(idx + 1, 2026);
-                return (
-                  <div key={idx} className="bg-white rounded-lg p-4 shadow border border-neutral-300">
-                    <h3 className="text-lg font-medium mb-3 text-center" style={{ color: '#A17188' }}>{month}</h3>
-                    <div className="grid grid-cols-7 gap-1 text-xs">
-                      {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                        <div key={i} className="text-center font-bold text-neutral-600">{day}</div>
-                      ))}
-                      {Array.from({ length: firstDay }, (_, i) => (
-                        <div key={`empty-${i}`}></div>
-                      ))}
-                      {Array.from({ length: daysInMonth }, (_, i) => (
-                        <div key={i} className="text-center p-1 hover:bg-neutral-100 rounded cursor-pointer" onClick={() => { setSelectedDay({ month: idx + 1, day: i + 1 }); navigateTo('day', { page: 'day', label: `${month} ${i + 1}`, month: idx + 1, day: { month: idx + 1, day: i + 1 } }); }} style={{ color: '#673147' }}>{i + 1}</div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
+          <div className="h-full w-full overflow-auto" style={{ backgroundColor: '#c6a4a4' }}>
+            <div className="max-w-6xl mx-auto p-6">
+              <h1 className="text-4xl mb-6 text-center font-medium" style={{ color: '#FBEAD6', fontFamily: 'Dancing Script, cursive', textShadow: '1px 1px 3px rgba(0,0,0,0.3)' }}>2026 Calendar</h1>
+              <div
+                className="rounded-lg p-6"
+                style={{
+                  backgroundColor: '#FBEAD6',
+                  border: '2px solid #C4A574',
+                  boxShadow: '0 10px 20px rgba(0,0,0,0.3)'
+                }}
+              >
+                <div className="grid grid-cols-3 gap-4">
+                  {months.map((month, idx) => {
+                    const firstDay = new Date(2026, idx, 1).getDay();
+                    const daysInMonth = getDaysInMonth(idx + 1, 2026);
+                    return (
+                      <div key={idx} className="rounded-lg p-4" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid rgba(103, 49, 71, 0.2)' }}>
+                        <h3 className="text-xl font-bold mb-3 text-center" style={{ color: '#673147', fontFamily: 'Dancing Script, cursive' }}>{month}</h3>
+                        <div className="grid grid-cols-7 gap-1 text-xs">
+                          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                            <div key={i} className="text-center font-bold" style={{ color: '#A17188' }}>{day}</div>
+                          ))}
+                          {Array.from({ length: firstDay }, (_, i) => (
+                            <div key={`empty-${i}`}></div>
+                          ))}
+                          {Array.from({ length: daysInMonth }, (_, i) => (
+                            <div key={i} className="text-center p-1 rounded cursor-pointer transition-colors" style={{ color: '#673147' }} onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(161, 113, 136, 0.3)'} onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'} onClick={() => { setSelectedDay({ month: idx + 1, day: i + 1 }); navigateTo('day', { page: 'day', label: `${month} ${i + 1}`, month: idx + 1, day: { month: idx + 1, day: i + 1 } }); }}>{i + 1}</div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         </PageHeader>
@@ -910,57 +1016,126 @@ const DigitalPlanner2026 = () => {
   // QUARTER PAGE
   if (currentPage === 'quarter') {
     const quarterKey = `q${selectedQuarter}`;
+
+    // Binder ring component for quarterly page
+    const QuarterBinderRings = () => (
+      <div className="flex-shrink-0 w-12 flex flex-col justify-around py-12 z-20" style={{ backgroundColor: '#A17188' }}>
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="flex justify-center">
+            <div
+              className="w-10 h-10 rounded-full"
+              style={{
+                background: 'linear-gradient(180deg, #E8D574 0%, #D4AF37 30%, #B8960C 70%, #8B7500 100%)',
+                boxShadow: '0 3px 6px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2)',
+                border: '2px solid #8B7500'
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    );
+
     return (
       <>
         <PageHeader>
-          <div className="h-full w-full bg-neutral-50 p-8 overflow-auto">
-            <h1 className="text-4xl mb-8 text-center font-medium" style={{ color: '#A17188', fontFamily: 'Dancing Script, cursive' }}>Quarter {selectedQuarter} - 2026</h1>
+          <div className="h-full w-full overflow-auto" style={{ backgroundColor: '#c6a4a4' }}>
             <PageFormattingToolbar />
-            <div className="max-w-5xl mx-auto space-y-6">
-              <Section title="Quarterly Goals" bgColor="bg-neutral-200">
-                <SimpleTextArea
-                  fieldKey={`${quarterKey}-goals`}
-                  placeholder="What are your main objectives for this quarter?"
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={5}
-                  value={textContent[`${quarterKey}-goals`]}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
-              <Section title="Key Focus Areas" bgColor="bg-neutral-100">
-                <SimpleTextArea
-                  fieldKey={`${quarterKey}-focus`}
-                  placeholder="What areas need your attention?"
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={5}
-                  value={textContent[`${quarterKey}-focus`]}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
-              <Section title="Projects & Milestones" bgColor="bg-neutral-200">
-                <SimpleTextArea
-                  fieldKey={`${quarterKey}-projects`}
-                  placeholder="Major projects and milestones to track..."
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={5}
-                  value={textContent[`${quarterKey}-projects`]}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
-              <Section title="Notes" bgColor="bg-neutral-100">
-                <SimpleTextArea
-                  fieldKey={`${quarterKey}-notes`}
-                  placeholder="Additional thoughts..."
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={4}
-                  value={textContent[`${quarterKey}-notes`]}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
+            <div className="max-w-7xl mx-auto p-6">
+              <h1 className="text-4xl mb-6 text-center font-medium" style={{ color: '#FBEAD6', fontFamily: 'Dancing Script, cursive', textShadow: '1px 1px 3px rgba(0,0,0,0.3)' }}>Quarter {selectedQuarter} - 2026</h1>
+
+              {/* Open binder with pages */}
+              <div className="relative flex" style={{ minHeight: '80vh', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.4))' }}>
+                {/* Left page */}
+                <div
+                  className="flex-1 p-8 relative"
+                  style={{
+                    backgroundColor: '#FBEAD6',
+                    backgroundImage: `
+                      repeating-linear-gradient(#FBEAD6 0px, #FBEAD6 27px, #E8D5B7 28px),
+                      radial-gradient(ellipse at 100% 0%, rgba(139,109,79,0.15) 0%, transparent 50%),
+                      radial-gradient(ellipse at 100% 100%, rgba(139,109,79,0.1) 0%, transparent 50%)
+                    `,
+                    borderRadius: '4px 0 0 4px',
+                    boxShadow: 'inset -8px 0 20px rgba(0,0,0,0.12), inset 0 0 40px rgba(139,109,79,0.08)',
+                    border: '2px solid #C4A574',
+                    borderRight: 'none'
+                  }}
+                >
+                  <div className="space-y-4">
+                    <Section title="Quarterly Goals" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${quarterKey}-goals`}
+                        placeholder="What are your main objectives for this quarter?"
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={6}
+                        value={textContent[`${quarterKey}-goals`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                    <Section title="Key Focus Areas" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${quarterKey}-focus`}
+                        placeholder="What areas need your attention?"
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={6}
+                        value={textContent[`${quarterKey}-focus`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                  </div>
+                </div>
+
+                {/* Gold binder rings */}
+                <QuarterBinderRings />
+
+                {/* Right page */}
+                <div
+                  className="flex-1 p-8 relative"
+                  style={{
+                    backgroundColor: '#FBEAD6',
+                    backgroundImage: `
+                      repeating-linear-gradient(#FBEAD6 0px, #FBEAD6 27px, #E8D5B7 28px),
+                      radial-gradient(ellipse at 0% 0%, rgba(139,109,79,0.15) 0%, transparent 50%),
+                      radial-gradient(ellipse at 0% 100%, rgba(139,109,79,0.1) 0%, transparent 50%)
+                    `,
+                    borderRadius: '0 4px 4px 0',
+                    boxShadow: 'inset 8px 0 20px rgba(0,0,0,0.12), inset 0 0 40px rgba(139,109,79,0.08)',
+                    border: '2px solid #C4A574',
+                    borderLeft: 'none'
+                  }}
+                >
+                  <div className="space-y-4">
+                    <Section title="Projects & Milestones" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${quarterKey}-projects`}
+                        placeholder="Major projects and milestones to track..."
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={6}
+                        value={textContent[`${quarterKey}-projects`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                    <Section title="Notes" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${quarterKey}-notes`}
+                        placeholder="Additional thoughts..."
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={6}
+                        value={textContent[`${quarterKey}-notes`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </PageHeader>
@@ -978,27 +1153,35 @@ const DigitalPlanner2026 = () => {
     return (
       <>
         <PageHeader>
-          <div className="h-full w-full bg-neutral-50 p-8 overflow-auto">
-            <h1 className="text-4xl mb-8 text-center font-medium" style={{ color: '#A17188', fontFamily: 'Dancing Script, cursive' }}>{monthName} 2026</h1>
-            <div className="max-w-5xl mx-auto">
-              <div className="bg-white rounded-lg p-6 shadow border border-neutral-300">
+          <div className="h-full w-full overflow-auto pb-12" style={{ backgroundColor: '#c6a4a4' }}>
+            <div className="max-w-5xl mx-auto p-6 pb-12">
+              <h1 className="text-4xl mb-6 text-center font-medium" style={{ color: '#FBEAD6', fontFamily: 'Dancing Script, cursive', textShadow: '1px 1px 3px rgba(0,0,0,0.3)' }}>{monthName} 2026</h1>
+              <div
+                className="rounded-lg p-6"
+                style={{
+                  backgroundColor: '#FBEAD6',
+                  border: '2px solid #C4A574',
+                  boxShadow: '0 10px 20px rgba(0,0,0,0.3)'
+                }}
+              >
                 <div className="grid grid-cols-7 gap-2">
                   {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day, i) => (
-                    <div key={i} className="text-center font-bold text-neutral-700 pb-2 border-b-2 border-neutral-300">{day}</div>
+                    <div key={i} className="text-center font-bold pb-2 border-b-2" style={{ color: '#673147', borderColor: 'rgba(103, 49, 71, 0.3)' }}>{day}</div>
                   ))}
                   {Array.from({ length: firstDay }, (_, i) => (
-                    <div key={`empty-${i}`} className="bg-neutral-100 min-h-24 rounded"></div>
+                    <div key={`empty-${i}`} className="min-h-24 rounded" style={{ backgroundColor: 'rgba(242, 198, 222, 0.2)' }}></div>
                   ))}
                   {Array.from({ length: daysInMonth }, (_, i) => {
                     const dayNum = i + 1;
                     const dayKey = `cal-${selectedMonth}-${dayNum}`;
                     return (
-                      <div key={i} className="bg-white border border-neutral-300 rounded p-2 min-h-24 hover:shadow-md transition-shadow">
-                        <div className="text-sm font-bold mb-1 cursor-pointer hover:text-neutral-600" style={{ color: '#A17188' }} onClick={() => { setSelectedDay({ month: selectedMonth, day: dayNum }); navigateTo('day', { page: 'day', label: `${monthName} ${dayNum}`, month: selectedMonth, day: { month: selectedMonth, day: dayNum } }); }}>{dayNum}</div>
+                      <div key={i} className="rounded p-2 min-h-24 hover:shadow-md transition-shadow" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid rgba(103, 49, 71, 0.2)' }}>
+                        <div className="text-sm font-bold mb-1 cursor-pointer" style={{ color: '#673147' }} onMouseEnter={(e) => e.target.style.color = '#A17188'} onMouseLeave={(e) => e.target.style.color = '#673147'} onClick={() => { setSelectedDay({ month: selectedMonth, day: dayNum }); navigateTo('day', { page: 'day', label: `${monthName} ${dayNum}`, month: selectedMonth, day: { month: selectedMonth, day: dayNum } }); }}>{dayNum}</div>
                         <SimpleTextArea
                           fieldKey={dayKey}
                           placeholder="Notes..."
-                          className="w-full text-xs p-1 border-none bg-transparent focus:outline-none focus:ring-1 focus:ring-neutral-400 rounded"
+                          className="w-full text-xs p-1 border-none focus:outline-none focus:ring-1 focus:ring-pink-300 rounded"
+                          style={{ backgroundColor: 'rgba(251, 234, 214, 0.5)' }}
                           rows={2}
                           value={textContent[dayKey]}
                           onChange={handleTextChange}
@@ -1022,66 +1205,137 @@ const DigitalPlanner2026 = () => {
     const monthKey = `month-${selectedMonth}`;
     const monthName = months[selectedMonth - 1];
 
+    // Binder ring component for month page
+    const MonthBinderRings = () => (
+      <div className="flex-shrink-0 w-12 flex flex-col justify-around py-12 z-20" style={{ backgroundColor: '#A17188' }}>
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="flex justify-center">
+            <div
+              className="w-10 h-10 rounded-full"
+              style={{
+                background: 'linear-gradient(180deg, #E8D574 0%, #D4AF37 30%, #B8960C 70%, #8B7500 100%)',
+                boxShadow: '0 3px 6px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2)',
+                border: '2px solid #8B7500'
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    );
+
     return (
       <>
         <PageHeader>
-          <div className="h-full w-full bg-neutral-50 p-8 overflow-auto">
-            <h1 className="text-4xl mb-8 text-center font-medium" style={{ color: '#A17188', fontFamily: 'Dancing Script, cursive' }}>{monthName} Overview</h1>
+          <div className="h-full w-full overflow-auto" style={{ backgroundColor: '#c6a4a4' }}>
             <PageFormattingToolbar />
-            <div className="max-w-5xl mx-auto space-y-6">
-              <Section title="Monthly Goals" bgColor="bg-neutral-200">
-                <SimpleTextArea
-                  fieldKey={`${monthKey}-goals`}
-                  placeholder="What do you want to achieve this month?"
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={4}
-                  value={textContent[`${monthKey}-goals`]}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
-              <Section title="Priorities" bgColor="bg-neutral-100">
-                <CheckboxList
-                  listKey={`${monthKey}-priorities`}
-                  placeholder="Add priority..."
-                  items={checkboxLists[`${monthKey}-priorities`] || []}
-                  onUpdate={updateCheckboxItem}
-                  onRemove={removeCheckboxItem}
-                  onAdd={addCheckboxItem}
-                />
-              </Section>
-              <Section title="Important Dates & Events" bgColor="bg-neutral-200">
-                <SimpleTextArea
-                  fieldKey={`${monthKey}-events`}
-                  placeholder="Birthdays, appointments, deadlines..."
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={4}
-                  value={textContent[`${monthKey}-events`]}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
-              <Section title="Habits to Track" bgColor="bg-neutral-100">
-                <CheckboxList
-                  listKey={`${monthKey}-habits`}
-                  placeholder="Add habit..."
-                  items={checkboxLists[`${monthKey}-habits`] || []}
-                  onUpdate={updateCheckboxItem}
-                  onRemove={removeCheckboxItem}
-                  onAdd={addCheckboxItem}
-                />
-              </Section>
-              <Section title="Notes" bgColor="bg-neutral-200">
-                <SimpleTextArea
-                  fieldKey={`${monthKey}-notes`}
-                  placeholder="Additional thoughts..."
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={3}
-                  value={textContent[`${monthKey}-notes`]}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
+            <div className="max-w-7xl mx-auto p-6">
+              <h1 className="text-4xl mb-6 text-center font-medium" style={{ color: '#FBEAD6', fontFamily: 'Dancing Script, cursive', textShadow: '1px 1px 3px rgba(0,0,0,0.3)' }}>{monthName} Overview</h1>
+
+              {/* Open binder with pages */}
+              <div className="relative flex" style={{ minHeight: '80vh', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.4))' }}>
+                {/* Left page */}
+                <div
+                  className="flex-1 p-8 relative"
+                  style={{
+                    backgroundColor: '#FBEAD6',
+                    backgroundImage: `
+                      repeating-linear-gradient(#FBEAD6 0px, #FBEAD6 27px, #E8D5B7 28px),
+                      radial-gradient(ellipse at 100% 0%, rgba(139,109,79,0.15) 0%, transparent 50%),
+                      radial-gradient(ellipse at 100% 100%, rgba(139,109,79,0.1) 0%, transparent 50%)
+                    `,
+                    borderRadius: '4px 0 0 4px',
+                    boxShadow: 'inset -8px 0 20px rgba(0,0,0,0.12), inset 0 0 40px rgba(139,109,79,0.08)',
+                    border: '2px solid #C4A574',
+                    borderRight: 'none'
+                  }}
+                >
+                  <div className="space-y-4">
+                    <Section title="Monthly Goals" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${monthKey}-goals`}
+                        placeholder="What do you want to achieve this month?"
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={4}
+                        value={textContent[`${monthKey}-goals`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                    <Section title="Priorities" bgColor="bg-transparent">
+                      <div className="rounded p-3" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}>
+                        <CheckboxList
+                          listKey={`${monthKey}-priorities`}
+                          placeholder="Add priority..."
+                          items={checkboxLists[`${monthKey}-priorities`] || []}
+                          onUpdate={updateCheckboxItem}
+                          onRemove={removeCheckboxItem}
+                          onAdd={addCheckboxItem}
+                        />
+                      </div>
+                    </Section>
+                    <Section title="Important Dates & Events" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${monthKey}-events`}
+                        placeholder="Birthdays, appointments, deadlines..."
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={4}
+                        value={textContent[`${monthKey}-events`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                  </div>
+                </div>
+
+                {/* Gold binder rings */}
+                <MonthBinderRings />
+
+                {/* Right page */}
+                <div
+                  className="flex-1 p-8 relative"
+                  style={{
+                    backgroundColor: '#FBEAD6',
+                    backgroundImage: `
+                      repeating-linear-gradient(#FBEAD6 0px, #FBEAD6 27px, #E8D5B7 28px),
+                      radial-gradient(ellipse at 0% 0%, rgba(139,109,79,0.15) 0%, transparent 50%),
+                      radial-gradient(ellipse at 0% 100%, rgba(139,109,79,0.1) 0%, transparent 50%)
+                    `,
+                    borderRadius: '0 4px 4px 0',
+                    boxShadow: 'inset 8px 0 20px rgba(0,0,0,0.12), inset 0 0 40px rgba(139,109,79,0.08)',
+                    border: '2px solid #C4A574',
+                    borderLeft: 'none'
+                  }}
+                >
+                  <div className="space-y-4">
+                    <Section title="Habits to Track" bgColor="bg-transparent">
+                      <div className="rounded p-3" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}>
+                        <CheckboxList
+                          listKey={`${monthKey}-habits`}
+                          placeholder="Add habit..."
+                          items={checkboxLists[`${monthKey}-habits`] || []}
+                          onUpdate={updateCheckboxItem}
+                          onRemove={removeCheckboxItem}
+                          onAdd={addCheckboxItem}
+                        />
+                      </div>
+                    </Section>
+                    <Section title="Notes" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${monthKey}-notes`}
+                        placeholder="Additional thoughts..."
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={8}
+                        value={textContent[`${monthKey}-notes`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </PageHeader>
@@ -1095,56 +1349,125 @@ const DigitalPlanner2026 = () => {
     const weekKey = `week-${selectedMonth}-${selectedWeek}`;
     const monthName = months[selectedMonth - 1];
 
+    // Binder ring component for week page
+    const WeekBinderRings = () => (
+      <div className="flex-shrink-0 w-12 flex flex-col justify-around py-12 z-20" style={{ backgroundColor: '#A17188' }}>
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="flex justify-center">
+            <div
+              className="w-10 h-10 rounded-full"
+              style={{
+                background: 'linear-gradient(180deg, #E8D574 0%, #D4AF37 30%, #B8960C 70%, #8B7500 100%)',
+                boxShadow: '0 3px 6px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2)',
+                border: '2px solid #8B7500'
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    );
+
     return (
       <>
         <PageHeader>
-          <div className="h-full w-full bg-neutral-50 p-8 overflow-auto">
-            <h1 className="text-4xl mb-8 text-center font-medium" style={{ color: '#A17188', fontFamily: 'Dancing Script, cursive' }}>{monthName} - Week {selectedWeek}</h1>
+          <div className="h-full w-full overflow-auto" style={{ backgroundColor: '#c6a4a4' }}>
             <PageFormattingToolbar />
-            <div className="max-w-5xl mx-auto space-y-6">
-              <Section title="Weekly Goals" bgColor="bg-neutral-200">
-                <SimpleTextArea
-                  fieldKey={`${weekKey}-goals`}
-                  placeholder="What do you want to achieve this week?"
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={3}
-                  value={textContent[`${weekKey}-goals`]}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
-              <Section title="Weekly Tasks" bgColor="bg-neutral-100">
-                <CheckboxList
-                  listKey={`${weekKey}-tasks`}
-                  placeholder="Add task..."
-                  items={checkboxLists[`${weekKey}-tasks`] || []}
-                  onUpdate={updateCheckboxItem}
-                  onRemove={removeCheckboxItem}
-                  onAdd={addCheckboxItem}
-                />
-              </Section>
-              <Section title="Focus Areas" bgColor="bg-neutral-200">
-                <SimpleTextArea
-                  fieldKey={`${weekKey}-focus`}
-                  placeholder="What needs your attention this week?"
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={4}
-                  value={textContent[`${weekKey}-focus`]}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
-              <Section title="Notes & Reflections" bgColor="bg-neutral-100">
-                <SimpleTextArea
-                  fieldKey={`${weekKey}-notes`}
-                  placeholder="Weekly notes..."
-                  className="w-full p-4 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                  rows={4}
-                  value={textContent[`${weekKey}-notes`]}
-                  onChange={handleTextChange}
-                  onFocus={handleTextFocus}
-                />
-              </Section>
+            <div className="max-w-7xl mx-auto p-6">
+              <h1 className="text-4xl mb-6 text-center font-medium" style={{ color: '#FBEAD6', fontFamily: 'Dancing Script, cursive', textShadow: '1px 1px 3px rgba(0,0,0,0.3)' }}>{monthName} - Week {selectedWeek}</h1>
+
+              {/* Open binder with pages */}
+              <div className="relative flex" style={{ minHeight: '80vh', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.4))' }}>
+                {/* Left page */}
+                <div
+                  className="flex-1 p-8 relative"
+                  style={{
+                    backgroundColor: '#FBEAD6',
+                    backgroundImage: `
+                      repeating-linear-gradient(#FBEAD6 0px, #FBEAD6 27px, #E8D5B7 28px),
+                      radial-gradient(ellipse at 100% 0%, rgba(139,109,79,0.15) 0%, transparent 50%),
+                      radial-gradient(ellipse at 100% 100%, rgba(139,109,79,0.1) 0%, transparent 50%)
+                    `,
+                    borderRadius: '4px 0 0 4px',
+                    boxShadow: 'inset -8px 0 20px rgba(0,0,0,0.12), inset 0 0 40px rgba(139,109,79,0.08)',
+                    border: '2px solid #C4A574',
+                    borderRight: 'none'
+                  }}
+                >
+                  <div className="space-y-4">
+                    <Section title="Weekly Goals" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${weekKey}-goals`}
+                        placeholder="What do you want to achieve this week?"
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={4}
+                        value={textContent[`${weekKey}-goals`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                    <Section title="Weekly Tasks" bgColor="bg-transparent">
+                      <div className="rounded p-3" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}>
+                        <CheckboxList
+                          listKey={`${weekKey}-tasks`}
+                          placeholder="Add task..."
+                          items={checkboxLists[`${weekKey}-tasks`] || []}
+                          onUpdate={updateCheckboxItem}
+                          onRemove={removeCheckboxItem}
+                          onAdd={addCheckboxItem}
+                        />
+                      </div>
+                    </Section>
+                  </div>
+                </div>
+
+                {/* Gold binder rings */}
+                <WeekBinderRings />
+
+                {/* Right page */}
+                <div
+                  className="flex-1 p-8 relative"
+                  style={{
+                    backgroundColor: '#FBEAD6',
+                    backgroundImage: `
+                      repeating-linear-gradient(#FBEAD6 0px, #FBEAD6 27px, #E8D5B7 28px),
+                      radial-gradient(ellipse at 0% 0%, rgba(139,109,79,0.15) 0%, transparent 50%),
+                      radial-gradient(ellipse at 0% 100%, rgba(139,109,79,0.1) 0%, transparent 50%)
+                    `,
+                    borderRadius: '0 4px 4px 0',
+                    boxShadow: 'inset 8px 0 20px rgba(0,0,0,0.12), inset 0 0 40px rgba(139,109,79,0.08)',
+                    border: '2px solid #C4A574',
+                    borderLeft: 'none'
+                  }}
+                >
+                  <div className="space-y-4">
+                    <Section title="Focus Areas" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${weekKey}-focus`}
+                        placeholder="What needs your attention this week?"
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={5}
+                        value={textContent[`${weekKey}-focus`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                    <Section title="Notes & Reflections" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${weekKey}-notes`}
+                        placeholder="Weekly notes..."
+                        className="w-full p-4 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={5}
+                        value={textContent[`${weekKey}-notes`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </PageHeader>
@@ -1162,80 +1485,157 @@ const DigitalPlanner2026 = () => {
     }
     times.push('1 AM', '2 AM');
     const dayKey = `day-${selectedDay.month}-${selectedDay.day}`;
-    
+
+    // Binder ring component - positioned in center gap between pages
+    const BinderRings = () => (
+      <div className="flex-shrink-0 w-12 flex flex-col justify-around py-12 z-20" style={{ backgroundColor: '#A17188' }}>
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="flex justify-center">
+            <div
+              className="w-10 h-10 rounded-full"
+              style={{
+                background: 'linear-gradient(180deg, #E8D574 0%, #D4AF37 30%, #B8960C 70%, #8B7500 100%)',
+                boxShadow: '0 3px 6px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2)',
+                border: '2px solid #8B7500'
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    );
+
     return (
       <>
         <PageHeader>
-          <div className="h-full w-full bg-neutral-50 p-8 overflow-auto">
-            <h1 className="text-4xl mb-8 text-center font-medium" style={{ color: '#A17188', fontFamily: 'Dancing Script, cursive' }}>{months[selectedDay.month - 1]} {selectedDay.day}, 2026</h1>
+          <div className="h-full w-full overflow-auto" style={{ backgroundColor: '#c6a4a4' }}>
             <PageFormattingToolbar />
-            <div className="max-w-6xl mx-auto grid grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <Section title="Goals for the Day" bgColor="bg-neutral-200">
-                  <SimpleTextArea
-                    fieldKey={`${dayKey}-goals`}
-                    placeholder="What do you want to achieve today?"
-                    className="w-full p-3 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                    rows={3}
-                    value={textContent[`${dayKey}-goals`]}
-                    onChange={handleTextChange}
-                    onFocus={handleTextFocus}
-                  />
-                </Section>
+            {/* Binder container */}
+            <div className="max-w-7xl mx-auto p-6">
+              <h1 className="text-4xl mb-6 text-center font-medium" style={{ color: '#FBEAD6', fontFamily: 'Dancing Script, cursive', textShadow: '1px 1px 3px rgba(0,0,0,0.3)' }}>{months[selectedDay.month - 1]} {selectedDay.day}, 2026</h1>
 
-                {/* Google Calendar Integration */}
-                <GoogleCalendar selectedDate={selectedDay} />
+              {/* Open binder with pages */}
+              <div
+                className="relative flex"
+                style={{
+                  minHeight: '80vh',
+                  filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.4))'
+                }}
+              >
+                {/* Left page */}
+                <div
+                  className="flex-1 p-8 relative"
+                  style={{
+                    backgroundColor: '#FBEAD6',
+                    backgroundImage: `
+                      repeating-linear-gradient(#FBEAD6 0px, #FBEAD6 27px, #E8D5B7 28px),
+                      radial-gradient(ellipse at 100% 0%, rgba(139,109,79,0.15) 0%, transparent 50%),
+                      radial-gradient(ellipse at 100% 100%, rgba(139,109,79,0.1) 0%, transparent 50%),
+                      radial-gradient(ellipse at 0% 50%, rgba(139,109,79,0.08) 0%, transparent 40%)
+                    `,
+                    borderRadius: '4px 0 0 4px',
+                    boxShadow: 'inset -8px 0 20px rgba(0,0,0,0.12), inset 0 0 40px rgba(139,109,79,0.08)',
+                    border: '2px solid #C4A574',
+                    borderRight: 'none'
+                  }}
+                >
+                  <div className="space-y-4">
+                    <Section title="Goals for the Day" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${dayKey}-goals`}
+                        placeholder="What do you want to achieve today?"
+                        className="w-full p-3 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={3}
+                        value={textContent[`${dayKey}-goals`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
 
-                <Section title="Schedule" bgColor="bg-white">
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {times.map((time, i) => (
-                      <div key={i} className="flex gap-3 border-b border-neutral-100 pb-2">
-                        <div className="w-16 text-sm font-semibold text-neutral-700 flex-shrink-0">{time}</div>
-                        <SimpleInput
-                          fieldKey={`${dayKey}-time-${i}`}
-                          placeholder="..."
-                          className="flex-1 text-sm focus:outline-none bg-neutral-50 px-2 py-1 rounded border border-neutral-300"
-                          value={textContent[`${dayKey}-time-${i}`]}
-                          onChange={handleTextChange}
+                    {/* Google Calendar Integration - wrapped to match Section structure */}
+                    <div className="bg-transparent rounded-lg p-6">
+                      <GoogleCalendar selectedDate={selectedDay} />
+                    </div>
+
+                    <Section title="Schedule" bgColor="bg-transparent">
+                      <div className="space-y-1 max-h-80 overflow-y-auto rounded p-3" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}>
+                        {times.map((time, i) => (
+                          <div key={i} className="flex items-center gap-2 border-b pb-1" style={{ borderColor: 'rgba(103, 49, 71, 0.2)' }}>
+                            <div className="w-16 text-xs font-semibold flex-shrink-0 text-right pr-2" style={{ color: '#673147' }}>{time}</div>
+                            <SimpleInput
+                              fieldKey={`${dayKey}-time-${i}`}
+                              placeholder="..."
+                              className="flex-1 text-sm focus:outline-none px-2 py-1 rounded"
+                              style={{ backgroundColor: 'rgba(251, 234, 214, 0.5)', border: '1px solid rgba(196, 165, 116, 0.5)' }}
+                              value={textContent[`${dayKey}-time-${i}`]}
+                              onChange={handleTextChange}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </Section>
+                  </div>
+                </div>
+
+                {/* Gold binder rings */}
+                <BinderRings />
+
+                {/* Right page */}
+                <div
+                  className="flex-1 p-8 relative"
+                  style={{
+                    backgroundColor: '#FBEAD6',
+                    backgroundImage: `
+                      repeating-linear-gradient(#FBEAD6 0px, #FBEAD6 27px, #E8D5B7 28px),
+                      radial-gradient(ellipse at 0% 0%, rgba(139,109,79,0.15) 0%, transparent 50%),
+                      radial-gradient(ellipse at 0% 100%, rgba(139,109,79,0.1) 0%, transparent 50%),
+                      radial-gradient(ellipse at 100% 50%, rgba(139,109,79,0.08) 0%, transparent 40%)
+                    `,
+                    borderRadius: '0 4px 4px 0',
+                    boxShadow: 'inset 8px 0 20px rgba(0,0,0,0.12), inset 0 0 40px rgba(139,109,79,0.08)',
+                    border: '2px solid #C4A574',
+                    borderLeft: 'none'
+                  }}
+                >
+                  <div className="space-y-4">
+                    <Section title="To Do List" bgColor="bg-transparent">
+                      <div className="rounded p-3" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}>
+                        <CheckboxList
+                          listKey={`${dayKey}-todo`}
+                          placeholder="Add task..."
+                          items={checkboxLists[`${dayKey}-todo`] || []}
+                          onUpdate={updateCheckboxItem}
+                          onRemove={removeCheckboxItem}
+                          onAdd={addCheckboxItem}
                         />
                       </div>
-                    ))}
+                    </Section>
+                    <Section title="Journal" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${dayKey}-notes`}
+                        placeholder="Write your thoughts, reflections, and experiences..."
+                        className="w-full p-3 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={8}
+                        value={textContent[`${dayKey}-notes`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
+                    <Section title="Gratitude" bgColor="bg-transparent">
+                      <SimpleTextArea
+                        fieldKey={`${dayKey}-gratitude`}
+                        placeholder="What are you grateful for today?"
+                        className="w-full p-3 focus:outline-none focus:ring-2 focus:ring-pink-300 rounded"
+                        style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}
+                        rows={3}
+                        value={textContent[`${dayKey}-gratitude`]}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                      />
+                    </Section>
                   </div>
-                </Section>
-              </div>
-              <div className="space-y-4">
-                <Section title="To Do List" bgColor="bg-neutral-200">
-                  <CheckboxList
-                    listKey={`${dayKey}-todo`}
-                    placeholder="Add task..."
-                    items={checkboxLists[`${dayKey}-todo`] || []}
-                    onUpdate={updateCheckboxItem}
-                    onRemove={removeCheckboxItem}
-                    onAdd={addCheckboxItem}
-                  />
-                </Section>
-                <Section title="Journal" bgColor="bg-neutral-100">
-                  <SimpleTextArea
-                    fieldKey={`${dayKey}-notes`}
-                    placeholder="Write your thoughts, reflections, and experiences..."
-                    className="w-full p-3 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                    rows={8}
-                    value={textContent[`${dayKey}-notes`]}
-                    onChange={handleTextChange}
-                    onFocus={handleTextFocus}
-                  />
-                </Section>
-                <Section title="Gratitude" bgColor="bg-neutral-200">
-                  <SimpleTextArea
-                    fieldKey={`${dayKey}-gratitude`}
-                    placeholder="What are you grateful for today?"
-                    className="w-full p-3 border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-neutral-400 rounded"
-                    rows={3}
-                    value={textContent[`${dayKey}-gratitude`]}
-                    onChange={handleTextChange}
-                    onFocus={handleTextFocus}
-                  />
-                </Section>
+                </div>
               </div>
             </div>
           </div>

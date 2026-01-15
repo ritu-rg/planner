@@ -162,15 +162,16 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
 
   if (!isSignedIn) {
     return (
-      <div className="bg-white border border-neutral-300 rounded-lg p-4">
+      <div className="rounded-lg p-4" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium" style={{ color: '#673147' }}>Google Calendar</p>
-            <p className="text-sm text-neutral-600">Sign in to view your events</p>
+            <p className="text-2xl font-bold" style={{ color: '#673147', fontFamily: 'Dancing Script, cursive' }}>Google Calendar</p>
+            <p className="text-sm" style={{ color: '#673147' }}>Sign in to view your events</p>
           </div>
           <button
             onClick={handleSignIn}
-            className="px-4 py-2 bg-white border border-neutral-300 rounded hover:bg-neutral-100 text-sm flex items-center gap-2"
+            className="px-4 py-2 rounded hover:opacity-90 text-sm flex items-center gap-2"
+            style={{ backgroundColor: '#FBEAD6', border: '1px solid #C4A574', color: '#673147' }}
           >
             <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
             Sign in with Google
@@ -181,22 +182,23 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
   }
 
   return (
-    <div className="bg-white border border-neutral-300 rounded-lg p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-medium" style={{ color: '#673147' }}>Google Calendar Events</h3>
+    <div className="rounded-lg p-4" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}>
+      <div className="flex items-center justify-between mb-4 border-b pb-2" style={{ borderColor: '#C4A574' }}>
+        <h3 className="text-2xl font-bold" style={{ color: '#673147', fontFamily: 'Dancing Script, cursive' }}>Google Calendar Events</h3>
         <button
           onClick={handleSignOut}
-          className="text-xs text-neutral-600 hover:text-neutral-800 underline"
+          className="text-xs hover:underline"
+          style={{ color: '#673147' }}
         >
           Sign out
         </button>
       </div>
 
-      {isLoading && <p className="text-sm text-neutral-600">Loading events...</p>}
+      {isLoading && <p className="text-sm" style={{ color: '#673147' }}>Loading events...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
 
       {!isLoading && !error && events.length === 0 && (
-        <p className="text-sm text-neutral-500 italic">No events scheduled for this day</p>
+        <p className="text-sm italic" style={{ color: '#673147' }}>No events scheduled for this day</p>
       )}
 
       {!isLoading && events.length > 0 && (
@@ -212,12 +214,12 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
                   <p className="font-medium text-sm" style={{ color: '#673147' }}>
                     {event.summary || 'Untitled Event'}
                   </p>
-                  <p className="text-xs text-neutral-600">
+                  <p className="text-xs" style={{ color: '#673147' }}>
                     {formatTime(event.start?.dateTime || event.start?.date)}
                     {event.end?.dateTime && ` - ${formatTime(event.end.dateTime)}`}
                   </p>
                   {event.location && (
-                    <p className="text-xs text-neutral-500 mt-1">📍 {event.location}</p>
+                    <p className="text-xs mt-1" style={{ color: '#8B5A6B' }}>📍 {event.location}</p>
                   )}
                 </div>
               </div>

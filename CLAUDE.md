@@ -125,10 +125,14 @@ Pages are rendered conditionally based on `currentPage`:
 
 ### Color Palette
 
-The planner uses a mauve/burgundy color scheme:
-- Primary: `#A17188` (mauve)
-- Accent: `#673147` (deep burgundy) - used for text
-- Highlight: `#C5B358` (gold)
+Color palette established:
+- Background: `#c6a4a4` (mauve)
+- Paper: `#FBEAD6` (champagne)
+- Pink accent: `rgba(242, 198, 222, 0.3)`
+- Text: `#673147` (burgundy)
+- Border: `#C4A574` (gold)
+- Rings: `#A17188` (mauve for spine)
+
 
 To change colors, search and replace these hex codes in `src/App.jsx`.
 
@@ -147,12 +151,18 @@ Text formatting is applied via markdown-like syntax using `applyFormat()` (lines
 
 ```
 src/
-├── App.jsx       # Main component with extracted sub-components
-├── main.jsx      # React entry point (minimal boilerplate)
-└── index.css     # Custom utility CSS classes (Tailwind-like)
+├── App.jsx              # Main component with page layouts and logic
+├── main.jsx             # React entry point (minimal boilerplate)
+├── index.css            # Custom utility CSS classes (Tailwind-like)
+└── components/
+    ├── CheckboxList.jsx # Dynamic todo list with checkboxes
+    ├── GoogleCalendar.jsx # Google Calendar integration component
+    ├── Section.jsx      # Page section wrapper with title styling
+    ├── SimpleInput.jsx  # Styled input field component
+    └── SimpleTextArea.jsx # Rich text contentEditable component
 tests/
-└── typing.spec.js # Playwright tests for typing functionality
-playwright.config.js # Playwright configuration
+└── typing.spec.js       # Playwright tests for typing functionality
+playwright.config.js     # Playwright configuration
 ```
 
 ## Important Notes
@@ -200,3 +210,31 @@ To add a new page/section:
 4. Fixed `applyFormat()` to never directly manipulate DOM (was setting `textarea.value`)
 
 **Verification**: Playwright tests confirm continuous typing works correctly (4/7 tests passing, failures are test-specific issues not actual bugs)
+
+## Recent Updates (2026-01-09)
+
+### Binder Journal Layout
+- Applied two-page spread layout with gold binder rings to: Yearly, Quarterly, Monthly Overview, Weekly, and Daily pages
+- Antique paper effect with champagne color (`#FBEAD6`) and subtle gradients
+- Gold binder rings component (`BinderRings`) rendered as flex element between pages
+
+### UI Styling Overhaul
+- **Formatting Toolbar**: All buttons now have consistent champagne background with gold border
+- **Breadcrumbs**: Updated with themed button styling (champagne bg, gold border, burgundy text)
+- **Prev/Next Navigation**: Matching button style, fixed breadcrumb updates on navigation
+- **NavigationMenu**: Champagne background, pink accent items, burgundy text
+- **Section Headings**: Dancing Script cursive font, larger size (text-3xl), bold weight
+
+### Component Style Props
+- `SimpleInput` and `SimpleTextArea` now accept and spread `style` prop for external styling
+- Allows passing `backgroundColor` and `border` styles from parent components
+
+### Text Boxes and List Areas
+- All text areas have pink accent background `rgba(242, 198, 222, 0.3)` with gold border `#C4A574`
+- CheckboxList items have champagne background `rgba(251, 234, 214, 0.5)` with subtle gold border
+- Schedule, To Do List, Priorities, Habits, Weekly Tasks containers all have gold borders
+
+### Google Calendar Integration
+- Session persistence using sessionStorage (token survives page navigation)
+- Gold border styling to match other content boxes
+- Wrapped in Section-like container for proper alignment

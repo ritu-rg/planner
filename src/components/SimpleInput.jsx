@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const SimpleInput = ({ fieldKey, placeholder, className, value, onChange }) => {
+const SimpleInput = ({ fieldKey, placeholder, className, style, value, onChange }) => {
   const [localValue, setLocalValue] = useState(value || '');
 
   useEffect(() => {
@@ -27,7 +27,8 @@ const SimpleInput = ({ fieldKey, placeholder, className, value, onChange }) => {
       style={{
         color: '#673147',
         fontFamily: "'Merriweather', Georgia, serif",
-        fontSize: '0.9rem'
+        fontSize: '0.9rem',
+        ...style
       }}
     />
   );

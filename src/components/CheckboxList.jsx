@@ -34,10 +34,11 @@ const CheckboxItem = ({ item, listKey, idx, placeholder, onUpdate, onRemove }) =
         onChange={handleTextChange}
         onBlur={handleTextBlur}
         placeholder={placeholder}
-        className="flex-1 p-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-500"
+        className="flex-1 p-2 rounded focus:outline-none"
         style={{
           color: '#673147',
-          backgroundColor: item.checked ? '#B7AEB6' : '#ffffff',
+          backgroundColor: item.checked ? 'rgba(161, 113, 136, 0.3)' : 'rgba(251, 234, 214, 0.5)',
+          border: '1px solid rgba(196, 165, 116, 0.5)',
           textDecoration: item.checked ? 'line-through' : 'none',
           opacity: item.checked ? 0.8 : 1
         }}
@@ -66,7 +67,7 @@ const CheckboxList = ({ listKey, placeholder, items, onUpdate, onRemove, onAdd }
           onRemove={onRemove}
         />
       ))}
-      <button onClick={() => onAdd(listKey)} className="text-neutral-600 hover:text-neutral-800 text-sm flex items-center gap-1">
+      <button onClick={() => onAdd(listKey)} className="text-sm flex items-center gap-1" style={{ color: '#673147' }}>
         + Add Item
       </button>
     </div>

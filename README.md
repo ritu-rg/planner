@@ -6,14 +6,15 @@ A beautiful, feature-rich digital planner built with React for organizing your 2
 
 - ✨ **Beautiful cover design** with custom planner artwork
 - 📅 **Complete 2026 calendar** with yearly, quarterly, monthly, weekly, and daily views
+- 📓 **Binder journal layout** - Two-page spread with gold binder rings and antique paper effect
 - ✍️ **Text formatting** - Bold, italic, highlights, colors, font styles, font sizes, headings, and bullets
 - 📝 **Rich note-taking** - Controlled textareas with instant updates
-- ✅ **To-do lists** with checkboxes
+- ✅ **To-do lists** with checkboxes and themed styling
 - 💾 **Auto-save** - All data saved to localStorage
 - 🔐 **Encrypted backups** - Daily auto-backup with client-side encryption and password protection
 - 📥 **Backup/Restore** - Download and upload your planner data as JSON
-- 📆 **Google Calendar integration** - View your Google Calendar events on daily pages
-- 🎨 **Mauve color palette** - Beautiful, calming design
+- 📆 **Google Calendar integration** - View your Google Calendar events on daily pages with session persistence
+- 🎨 **Elegant color palette** - Mauve background, champagne paper, pink accents, and gold borders
 
 ## Prerequisites
 
@@ -169,9 +170,17 @@ Each page has a formatting toolbar at the top:
 ## Customization
 
 ### Changing Colors
-The planner uses a mauve color palette. To customize:
-1. Open `src/App.jsx`
-2. Search for color hex codes like `#A17188`, `#673147`, `#C5B358`
+The planner uses an elegant color palette. Key colors to customize:
+- **Background**: `#c6a4a4` (mauve)
+- **Paper**: `#FBEAD6` (champagne)
+- **Pink accent**: `rgba(242, 198, 222, 0.3)`
+- **Text**: `#673147` (burgundy)
+- **Borders**: `#C4A574` (gold)
+- **Binder rings**: `#A17188` (mauve)
+
+To customize:
+1. Open `src/App.jsx` and component files in `src/components/`
+2. Search for the hex codes above
 3. Replace with your preferred colors
 
 ### Adding Pages
