@@ -225,6 +225,19 @@ const DigitalPlanner2026 = () => {
     });
   };
 
+  // Copy a task to another day's todo list
+  const copyTaskToDay = (taskText, targetMonth, targetDay) => {
+    const targetDayKey = `day-${targetMonth}-${targetDay}`;
+    const targetListKey = `${targetDayKey}-todo`;
+    setCheckboxLists(prev => ({
+      ...prev,
+      [targetListKey]: [...(prev[targetListKey] || []), { checked: false, text: taskText }]
+    }));
+    // Show brief confirmation
+    const monthName = months[targetMonth - 1];
+    alert(`Task copied to ${monthName} ${targetDay}`);
+  };
+
   const applyFormat = (command, value = null) => {
     const element = activeTextareaRef.current;
     if (!element) return;
@@ -1607,6 +1620,7 @@ const DigitalPlanner2026 = () => {
                           onUpdate={updateCheckboxItem}
                           onRemove={removeCheckboxItem}
                           onAdd={addCheckboxItem}
+                          onCopy={copyTaskToDay}
                         />
                       </div>
                     </Section>

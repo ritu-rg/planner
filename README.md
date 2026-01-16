@@ -10,6 +10,7 @@ A beautiful, feature-rich digital planner built with React for organizing your 2
 - ✍️ **Text formatting** - Bold, italic, highlights, colors, font styles, font sizes, headings, and bullets
 - 📝 **Rich note-taking** - Controlled textareas with instant updates
 - ✅ **To-do lists** with checkboxes and themed styling
+- 📋 **Copy tasks** - Copy individual tasks to another day with date picker
 - 💾 **Auto-save** - All data saved to localStorage
 - 🔐 **Encrypted backups** - Daily auto-backup with client-side encryption and password protection
 - 📥 **Backup/Restore** - Download and upload your planner data as JSON

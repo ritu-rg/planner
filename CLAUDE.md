@@ -238,3 +238,17 @@ To add a new page/section:
 - Session persistence using sessionStorage (token survives page navigation)
 - Gold border styling to match other content boxes
 - Wrapped in Section-like container for proper alignment
+- Heading moved outside the content box to match Section component styling
+
+### Copy Task Feature
+- Hover over any task in Daily To Do List to reveal copy icon
+- Click copy icon to open date picker modal
+- Select target month and day, then click Copy
+- Task is added to the target day's todo list
+- `copyTaskToDay(taskText, month, day)` handler in App.jsx
+- `CopyDatePicker` modal component in CheckboxList.jsx
+
+### Consistent Button Styling
+- All buttons use champagne background `rgba(251, 234, 214, 0.7)` with gold border `#C4A574`
+- Includes: Add Item, Cancel, Sign in/out, breadcrumbs, prev/next, formatting toolbar
+- Primary action buttons (Copy, Save Backup) use burgundy `#673147` for contrast
