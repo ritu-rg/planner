@@ -17,6 +17,32 @@ A beautiful, feature-rich digital planner built with React for organizing your 2
 - 📆 **Google Calendar integration** - View your Google Calendar events on daily pages with session persistence
 - 🎨 **Elegant color palette** - Mauve background, champagne paper, pink accents, and gold borders
 
+## Screenshots
+
+### Contents Page
+![Contents](outputs/contents.png)
+
+### 2026 Calendar
+![2026 Calendar](outputs/calendar.png)
+
+### Yearly Overview
+![Yearly Overview](outputs/yearly-overview.png)
+
+### Quarterly Overview
+![Quarterly Overview](outputs/quarterly-overview.png)
+
+### Monthly Overview
+![Monthly Overview](outputs/monthly-overview.png)
+
+### Weekly Overview
+![Weekly Overview](outputs/weekly-overview.png)
+
+### Daily Overview
+![Daily Overview](outputs/daily-overview.png)
+
+### Navigation Menu
+![Navigation Menu](outputs/menu-bar.png)
+
 ## Prerequisites
 
 - **Node.js** (version 16 or higher)
