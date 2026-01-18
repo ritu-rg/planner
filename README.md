@@ -8,6 +8,7 @@ A beautiful, feature-rich digital planner built with React for organizing your 2
 - 📅 **Complete 2026 calendar** with yearly, quarterly, monthly, weekly, and daily views
 - 📓 **Binder journal layout** - Two-page spread with gold binder rings and antique paper effect
 - ✍️ **Text formatting** - Bold, italic, highlights, colors, font styles, font sizes, headings, and bullets
+- 🎨 **Format Painter** - Copy formatting from one selection and apply to another
 - 📝 **Rich note-taking** - Controlled textareas with instant updates
 - ✅ **To-do lists** with checkboxes and themed styling
 - 📋 **Copy tasks** - Copy individual tasks to another day with date picker

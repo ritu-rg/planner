@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Menu, X, Home, Upload, Bold, Italic, Highlighter, Palette, Type, Save } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Menu, X, Home, Upload, Bold, Italic, Highlighter, Palette, Type, Save, Paintbrush } from 'lucide-react';
 
 // Component imports
 import SimpleTextArea from './components/SimpleTextArea';
@@ -28,6 +28,10 @@ const DigitalPlanner2026 = () => {
   // Simple backup state - track directory and password
   const [backupDirectoryHandle, setBackupDirectoryHandle] = useState(null);
   const [backupPassword, setBackupPassword] = useState('');
+
+  // Format painter state
+  const [formatPainterActive, setFormatPainterActive] = useState(false);
+  const [storedFormat, setStoredFormat] = useState(null);
 
   const activeTextareaRef = useRef(null);
 
@@ -252,6 +256,96 @@ const DigitalPlanner2026 = () => {
     }
   };
 
+  // Format Painter: Copy formatting from current selection
+  const copyFormat = () => {
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) {
+      alert('Please select some text to copy formatting from');
+      return;
+    }
+
+    // Get the element containing the selection
+    const range = selection.getRangeAt(0);
+    let node = range.startContainer;
+    if (node.nodeType === Node.TEXT_NODE) {
+      node = node.parentElement;
+    }
+
+    // Get computed styles from the selected element
+    const computedStyle = window.getComputedStyle(node);
+
+    // Use queryCommandState to detect bold/italic (more reliable)
+    const isBold = document.queryCommandState('bold');
+    const isItalic = document.queryCommandState('italic');
+
+    const format = {
+      fontFamily: computedStyle.fontFamily,
+      fontSize: computedStyle.fontSize,
+      isBold: isBold,
+      isItalic: isItalic,
+      color: computedStyle.color,
+      backgroundColor: computedStyle.backgroundColor
+    };
+
+    setStoredFormat(format);
+    setFormatPainterActive(true);
+  };
+
+  // Format Painter: Apply stored formatting to current selection
+  const applyStoredFormat = () => {
+    const element = activeTextareaRef.current;
+    if (!element || !storedFormat) return;
+
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) {
+      alert('Please select some text to apply formatting to');
+      return;
+    }
+
+    element.focus();
+
+    // Apply each stored format property
+    // For bold/italic: check current state and toggle if needed to match stored format
+    const currentBold = document.queryCommandState('bold');
+    const currentItalic = document.queryCommandState('italic');
+
+    if (storedFormat.isBold && !currentBold) {
+      document.execCommand('bold', false, null);
+    } else if (!storedFormat.isBold && currentBold) {
+      document.execCommand('bold', false, null);
+    }
+
+    if (storedFormat.isItalic && !currentItalic) {
+      document.execCommand('italic', false, null);
+    } else if (!storedFormat.isItalic && currentItalic) {
+      document.execCommand('italic', false, null);
+    }
+
+    // Apply color (always apply if stored)
+    if (storedFormat.color) {
+      document.execCommand('foreColor', false, storedFormat.color);
+    }
+
+    // Apply background color / highlight
+    if (storedFormat.backgroundColor && storedFormat.backgroundColor !== 'rgba(0, 0, 0, 0)' && storedFormat.backgroundColor !== 'transparent') {
+      document.execCommand('backColor', false, storedFormat.backgroundColor);
+    }
+
+    // Apply font family
+    if (storedFormat.fontFamily) {
+      document.execCommand('fontName', false, storedFormat.fontFamily);
+    }
+
+    // Sync state
+    const fieldKey = element.getAttribute('data-field-key');
+    if (fieldKey) {
+      setTextContent(prev => ({ ...prev, [fieldKey]: element.innerHTML }));
+    }
+
+    // Deactivate format painter after applying
+    setFormatPainterActive(false);
+  };
+
   const PageFormattingToolbar = () => {
     const [showHighlightPicker, setShowHighlightPicker] = useState(false);
     const [showColorPicker, setShowColorPicker] = useState(false);
@@ -305,6 +399,29 @@ const DigitalPlanner2026 = () => {
         </button>
         <button onMouseDown={(e) => { e.preventDefault(); applyFormat('italic'); }} className="p-2 rounded flex items-center gap-1" style={{ color: '#673147', backgroundColor: 'rgba(251, 234, 214, 0.7)', border: '1px solid #C4A574' }} title="Italic" type="button">
           <Italic size={14} /> <span className="text-xs">Italic</span>
+        </button>
+
+        {/* Format Painter */}
+        <button
+          onMouseDown={(e) => {
+            e.preventDefault();
+            if (formatPainterActive) {
+              applyStoredFormat();
+            } else {
+              copyFormat();
+            }
+          }}
+          className="p-2 rounded flex items-center gap-1"
+          style={{
+            color: formatPainterActive ? '#fff' : '#673147',
+            backgroundColor: formatPainterActive ? '#673147' : 'rgba(251, 234, 214, 0.7)',
+            border: '1px solid #C4A574'
+          }}
+          title={formatPainterActive ? "Click to apply copied format" : "Copy formatting from selection"}
+          type="button"
+        >
+          <Paintbrush size={14} />
+          <span className="text-xs">{formatPainterActive ? 'Apply' : 'Format'}</span>
         </button>
 
         {/* Highlight Color Picker */}
