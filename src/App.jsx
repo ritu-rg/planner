@@ -229,6 +229,15 @@ const DigitalPlanner2026 = () => {
     });
   };
 
+  const reorderCheckboxItem = (listKey, fromIndex, toIndex) => {
+    setCheckboxLists(prev => {
+      const items = [...(prev[listKey] || [])];
+      const [removed] = items.splice(fromIndex, 1);
+      items.splice(toIndex, 0, removed);
+      return { ...prev, [listKey]: items };
+    });
+  };
+
   // Copy a task to another day's todo list
   const copyTaskToDay = (taskText, targetMonth, targetDay) => {
     const targetDayKey = `day-${targetMonth}-${targetDay}`;
@@ -1401,6 +1410,8 @@ const DigitalPlanner2026 = () => {
                           onUpdate={updateCheckboxItem}
                           onRemove={removeCheckboxItem}
                           onAdd={addCheckboxItem}
+                          onReorder={reorderCheckboxItem}
+                          onCopy={copyTaskToDay}
                         />
                       </div>
                     </Section>
@@ -1448,6 +1459,8 @@ const DigitalPlanner2026 = () => {
                           onUpdate={updateCheckboxItem}
                           onRemove={removeCheckboxItem}
                           onAdd={addCheckboxItem}
+                          onReorder={reorderCheckboxItem}
+                          onCopy={copyTaskToDay}
                         />
                       </div>
                     </Section>
@@ -1545,6 +1558,8 @@ const DigitalPlanner2026 = () => {
                           onUpdate={updateCheckboxItem}
                           onRemove={removeCheckboxItem}
                           onAdd={addCheckboxItem}
+                          onReorder={reorderCheckboxItem}
+                          onCopy={copyTaskToDay}
                         />
                       </div>
                     </Section>
@@ -1737,6 +1752,7 @@ const DigitalPlanner2026 = () => {
                           onUpdate={updateCheckboxItem}
                           onRemove={removeCheckboxItem}
                           onAdd={addCheckboxItem}
+                          onReorder={reorderCheckboxItem}
                           onCopy={copyTaskToDay}
                         />
                       </div>
