@@ -12,6 +12,8 @@ A beautiful, feature-rich digital planner built with React for organizing your 2
 - 📝 **Rich note-taking** - Controlled textareas with instant updates
 - ✅ **To-do lists** with checkboxes and themed styling
 - 📋 **Copy tasks** - Copy individual tasks to another day with date picker
+- 🔗 **Browser history** - Back/forward buttons work, bookmarkable URLs (e.g., `/#/day/3/15`)
+- 🔄 **Cross-tab sync** - Edits in one tab automatically appear in other tabs
 - 💾 **Auto-save** - All data saved to localStorage
 - 🔐 **Encrypted backups** - Daily auto-backup with client-side encryption and password protection
 - 📥 **Backup/Restore** - Download and upload your planner data as JSON
@@ -171,6 +173,9 @@ planner-2026-react/
 - Click the **Menu** button (top-left) to navigate between pages
 - Use **breadcrumbs** to jump back to previous pages
 - Click on month names to expand weekly and daily views
+- **Browser back/forward** buttons work for navigation
+- **Bookmark any page** - URLs like `/#/day/3/15` (March 15) can be bookmarked
+- **Refresh preserves location** - Page state is maintained on browser refresh
 
 ### Text Formatting
 Each page has a formatting toolbar at the top:

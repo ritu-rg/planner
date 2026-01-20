@@ -49,11 +49,14 @@ tests/
 - Format Painter: `copyFormat()` captures formatting, `applyStoredFormat()` applies it
 - Formats: bold, italic, highlight colors, text colors, fonts, sizes, headings, bullets
 
-### Navigation
+### Navigation & URL Routing
 - `currentPage` state determines which page renders
 - `navigateTo(page, crumb)` - forward navigation with breadcrumbs
 - `navigateToBreadcrumb(index)` - backward navigation
 - Pages: cover, contents, calendar, yearly, quarter, month-calendar, month-overview, week, day
+- Hash-based URLs: `/#/cover`, `/#/day/3/15`, `/#/week/6/2`, `/#/quarter/2`
+- `getInitialNavState()` - parses URL hash on load for bookmark/refresh support
+- `storage` event listener enables cross-tab data sync
 
 ### Color Palette
 - Background: `#c6a4a4` (mauve)

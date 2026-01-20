@@ -11,16 +11,59 @@ import GoogleCalendar from './components/GoogleCalendar';
 // Utility imports
 import { encryptData, decryptData } from './utils/encryption';
 
+// Parse URL hash to get initial navigation state (defined outside component for useState initializer)
+const getInitialNavState = () => {
+  if (typeof window === 'undefined') return { page: 'cover' };
+
+  const hash = window.location.hash;
+  if (!hash || hash === '#' || hash === '#/') return { page: 'cover' };
+
+  const parts = hash.replace('#/', '').split('/');
+  const page = parts[0];
+
+  switch (page) {
+    case 'cover':
+    case 'contents':
+    case 'calendar':
+    case 'yearly':
+      return { page };
+    case 'quarter': {
+      const q = parseInt(parts[1], 10);
+      return (q >= 1 && q <= 4) ? { page, quarter: q } : { page: 'cover' };
+    }
+    case 'month-calendar':
+    case 'month-overview': {
+      const m = parseInt(parts[1], 10);
+      return (m >= 1 && m <= 12) ? { page, month: m } : { page: 'cover' };
+    }
+    case 'week': {
+      const m = parseInt(parts[1], 10), w = parseInt(parts[2], 10);
+      return (m >= 1 && m <= 12 && w >= 1 && w <= 5)
+        ? { page, month: m, week: w } : { page: 'cover' };
+    }
+    case 'day': {
+      const m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+      return (m >= 1 && m <= 12 && d >= 1 && d <= 31)
+        ? { page, month: m, day: d } : { page: 'cover' };
+    }
+    default: return { page: 'cover' };
+  }
+};
+
+const initialNavState = getInitialNavState();
+
 const DigitalPlanner2026 = () => {
-  const [currentPage, setCurrentPage] = useState('cover');
+  const [currentPage, setCurrentPage] = useState(initialNavState.page);
   const [expandedMonths, setExpandedMonths] = useState({});
   const [showMenu, setShowMenu] = useState(false);
   const [breadcrumbs, setBreadcrumbs] = useState([]);
   const [isOpening, setIsOpening] = useState(false);
-  const [selectedQuarter, setSelectedQuarter] = useState(1);
-  const [selectedMonth, setSelectedMonth] = useState(1);
-  const [selectedWeek, setSelectedWeek] = useState(1);
-  const [selectedDay, setSelectedDay] = useState({ month: 1, day: 1 });
+  const [selectedQuarter, setSelectedQuarter] = useState(initialNavState.quarter || 1);
+  const [selectedMonth, setSelectedMonth] = useState(initialNavState.month || 1);
+  const [selectedWeek, setSelectedWeek] = useState(initialNavState.week || 1);
+  const [selectedDay, setSelectedDay] = useState(
+    initialNavState.day ? { month: initialNavState.month, day: initialNavState.day } : { month: 1, day: 1 }
+  );
 
   const [textContent, setTextContent] = useState({});
   const [checkboxLists, setCheckboxLists] = useState({});
@@ -34,6 +77,8 @@ const DigitalPlanner2026 = () => {
   const [storedFormat, setStoredFormat] = useState(null);
 
   const activeTextareaRef = useRef(null);
+  const isNavigatingRef = useRef(false);
+  const isInitializedRef = useRef(false);
 
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -68,6 +113,22 @@ const DigitalPlanner2026 = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, [textContent, checkboxLists]);
+
+  // Cross-tab data synchronization
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key !== 'planner2026' || !event.newValue) return;
+      try {
+        const data = JSON.parse(event.newValue);
+        if (data.textContent) setTextContent(data.textContent);
+        if (data.checkboxLists) setCheckboxLists(data.checkboxLists);
+      } catch (e) {
+        console.error('Failed to sync from other tab:', e);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
   const getWeeksInMonth = (month) => Math.ceil(getDaysInMonth(month, 2026) / 7);
@@ -201,6 +262,102 @@ const DigitalPlanner2026 = () => {
     if (crumb.week !== undefined) setSelectedWeek(crumb.week);
     if (crumb.day !== undefined) setSelectedDay(crumb.day);
   };
+
+  // Hash-based URL routing helpers
+  const stateToHash = useCallback(() => {
+    switch (currentPage) {
+      case 'cover': return '#/cover';
+      case 'contents': return '#/contents';
+      case 'calendar': return '#/calendar';
+      case 'yearly': return '#/yearly';
+      case 'quarter': return `#/quarter/${selectedQuarter}`;
+      case 'month-calendar': return `#/month-calendar/${selectedMonth}`;
+      case 'month-overview': return `#/month-overview/${selectedMonth}`;
+      case 'week': return `#/week/${selectedMonth}/${selectedWeek}`;
+      case 'day': return `#/day/${selectedDay.month}/${selectedDay.day}`;
+      default: return '#/cover';
+    }
+  }, [currentPage, selectedQuarter, selectedMonth, selectedWeek, selectedDay]);
+
+  const parseHash = (hash) => {
+    if (!hash || hash === '#' || hash === '#/') return { page: 'cover' };
+    const parts = hash.replace('#/', '').split('/');
+    const page = parts[0];
+
+    switch (page) {
+      case 'cover':
+      case 'contents':
+      case 'calendar':
+      case 'yearly':
+        return { page };
+      case 'quarter': {
+        const q = parseInt(parts[1], 10);
+        return (q >= 1 && q <= 4) ? { page, quarter: q } : { page: 'cover' };
+      }
+      case 'month-calendar':
+      case 'month-overview': {
+        const m = parseInt(parts[1], 10);
+        return (m >= 1 && m <= 12) ? { page, month: m } : { page: 'cover' };
+      }
+      case 'week': {
+        const m = parseInt(parts[1], 10), w = parseInt(parts[2], 10);
+        return (m >= 1 && m <= 12 && w >= 1 && w <= 5)
+          ? { page, month: m, week: w } : { page: 'cover' };
+      }
+      case 'day': {
+        const m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+        return (m >= 1 && m <= 12 && d >= 1 && d <= 31)
+          ? { page, month: m, day: d } : { page: 'cover' };
+      }
+      default: return { page: 'cover' };
+    }
+  };
+
+  const applyNavigationState = useCallback((navState) => {
+    setCurrentPage(navState.page);
+    if (navState.quarter !== undefined) setSelectedQuarter(navState.quarter);
+    if (navState.month !== undefined) setSelectedMonth(navState.month);
+    if (navState.week !== undefined) setSelectedWeek(navState.week);
+    if (navState.day !== undefined) {
+      setSelectedDay({ month: navState.month, day: navState.day });
+    }
+  }, []);
+
+  // Sync navigation state to URL hash
+  useEffect(() => {
+    // Skip until we've initialized from URL
+    if (!isInitializedRef.current) return;
+
+    if (isNavigatingRef.current) {
+      isNavigatingRef.current = false;
+      return;
+    }
+    const newHash = stateToHash();
+    if (window.location.hash !== newHash) {
+      window.history.pushState(null, '', newHash);
+    }
+  }, [currentPage, selectedQuarter, selectedMonth, selectedWeek, selectedDay, stateToHash]);
+
+  // Handle browser back/forward and initial URL setup
+  useEffect(() => {
+    // Set initial URL if none exists (e.g., accessing root /)
+    const hash = window.location.hash;
+    if (!hash || hash === '#' || hash === '#/') {
+      window.history.replaceState(null, '', '#/cover');
+    }
+
+    // Mark as initialized so URL sync effect can start working
+    isInitializedRef.current = true;
+
+    const handlePopState = () => {
+      isNavigatingRef.current = true;
+      const navState = parseHash(window.location.hash);
+      applyNavigationState(navState);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [applyNavigationState]);
 
   const toggleMonth = (monthIdx) => {
     setExpandedMonths(prev => ({ ...prev, [monthIdx]: !prev[monthIdx] }));
