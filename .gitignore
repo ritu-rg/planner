@@ -20,6 +20,7 @@ dist-ssr
 *.suo
 *.ntvs*
 *.njsproj
+*.DS_Store
 *.sln
 *.sw?
 
@@ -27,3 +28,6 @@ dist-ssr
 .env
 .env.local
 .env.production
+
+# Static build output
+dist-static

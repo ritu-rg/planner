@@ -100,6 +100,30 @@ To test the production build locally:
 npm run preview
 ```
 
+### 5. Static/Distributable Build
+
+To create a distributable version that others can use without setting up Node.js:
+
+```bash
+# Build the static version
+npm run build:static
+
+# Serve it locally (opens browser at http://localhost:3001)
+npm run serve:static
+```
+
+This creates a `dist-static` folder with all assets using relative paths. Share this folder with users who can then serve it using any simple HTTP server:
+
+```bash
+# Using npx (no install needed)
+npx serve dist-static
+
+# Using Python
+cd dist-static && python -m http.server 8000
+```
+
+> **Note**: Due to browser security (CORS), the app requires a local HTTP server and cannot be opened directly via `file://` protocol.
+
 ## Google Calendar Integration (Optional)
 
 To view your Google Calendar events on daily pages:

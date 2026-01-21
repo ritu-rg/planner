@@ -10,7 +10,10 @@ Digital Planner 2026 - React SPA with custom utility CSS and localStorage persis
 npm install          # Install dependencies
 npm run dev          # Dev server at http://localhost:3000
 npm run build        # Production build to dist/
+npm run build:static # Distributable build to dist-static/
+npm run serve:static # Serve static build at http://localhost:3001
 npm test             # Run Playwright tests
+npm run test:static  # Run static build tests
 ```
 
 ## File Structure
@@ -27,7 +30,8 @@ src/
     ├── SimpleInput.jsx
     └── SimpleTextArea.jsx  # contentEditable rich text
 tests/
-└── typing.spec.js
+├── typing.spec.js       # Text input and navigation tests
+└── static-build.spec.js # Static build verification tests
 ```
 
 ## Architecture

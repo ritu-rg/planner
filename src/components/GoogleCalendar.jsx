@@ -6,6 +6,7 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isOffline, setIsOffline] = useState(false);
   const tokenClientRef = useRef(null);
   const gapiInitialized = useRef(false);
 
@@ -70,10 +71,18 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
     if (window.gapi && window.google) {
       initializeGapi();
     } else {
+      // Limit polling to avoid infinite loops when offline
+      let pollCount = 0;
+      const maxPolls = 50; // ~5 seconds at 100ms intervals
+
       const checkInterval = setInterval(() => {
+        pollCount++;
         if (window.gapi && window.google) {
           initializeGapi();
           clearInterval(checkInterval);
+        } else if (pollCount >= maxPolls) {
+          clearInterval(checkInterval);
+          setIsOffline(true);
         }
       }, 100);
       return () => clearInterval(checkInterval);
@@ -136,6 +145,28 @@ const GoogleCalendar = React.memo(({ selectedDate }) => {
     const date = new Date(dateTime);
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
+
+  // Show graceful message when offline or scripts unavailable
+  if (isOffline) {
+    return (
+      <div className="bg-transparent rounded-lg" data-testid="google-calendar-offline">
+        <h2
+          className="text-3xl mb-4 pb-2 border-b-2 border-amber-800/40"
+          style={{ color: '#673147', fontFamily: 'Dancing Script, cursive', fontWeight: 700 }}
+        >
+          Google Calendar
+        </h2>
+        <div className="rounded-lg p-4" style={{ backgroundColor: 'rgba(242, 198, 222, 0.3)', border: '1px solid #C4A574' }}>
+          <p className="text-sm" style={{ color: '#673147' }}>
+            Google Calendar is unavailable in offline mode.
+          </p>
+          <p className="text-xs mt-2" style={{ color: '#8B5A6B' }}>
+            Connect to the internet and reload to enable calendar integration.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!CLIENT_ID || CLIENT_ID === 'YOUR_CLIENT_ID_HERE.apps.googleusercontent.com') {
     return (
